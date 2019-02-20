@@ -46,7 +46,7 @@
     BOOST_PP_SEQ_FOR_EACH(_BUILD_TRANSITION_FUNCS,~,transitions)
 #define _BUILD_TRANSITION_FUNCS(z,data,transition)                                   \
     void W_CAT(BOOST_PP_SEQ_ELEM(0,transition),_,BOOST_PP_SEQ_ELEM(1,transition))(struct wfsm_transition* self, struct wfsm_event* event) \
-    { W_UNUSED(self); BOOST_PP_SEQ_ELEM(3,transition) }                         \
+    { W_UNUSED(self); W_UNUSED(event); BOOST_PP_SEQ_ELEM(3,transition) }                         \
 
 
 BUILD_STATE_FUNCS(STATES)

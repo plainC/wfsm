@@ -39,7 +39,7 @@ METHOD(wfsm_transition,public,int,try_on_event,
     if (self->target != self->start) {
         W_CALL_VOID(self->start,exit);
         W_CALL(self,take)(event);
-        W_CALL(event->region,set_state)(self->target);
+        W_CALL(W_OBJECT_AS(event->region,wfsm_region),set_state)(self->target);
         W_CALL_VOID(self->target,enter);
     } else
         W_CALL(self,take)(event);

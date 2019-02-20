@@ -42,10 +42,6 @@ METHOD(wfsm,public,struct wfsm_state*,add_state,
 METHOD(wfsm,public,struct wfsm_transition*,add_transition,
     (struct wfsm_region* region, struct wfsm_transition* transition))
 {
-    W_UNUSED(self);
-    W_UNUSED(region);
-    W_UNUSED(transition);
-
     if (!region)
         region = self->default_region;
 

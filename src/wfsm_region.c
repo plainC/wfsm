@@ -22,8 +22,8 @@ CONSTRUCT(wfsm_region) /* self */
 
 FINALIZE(wfsm_region) /* self */
 {
-    W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_state*, state, self->states)
-        W_CALL_VOID(state,free);
+    W_DYNAMIC_ARRAY_FOR_EACH(const struct wfsm_state*, state, self->states)
+        W_CALL_VOID(W_OBJECT_AS(state,wfsm_state),free);
 
     W_DYNAMIC_ARRAY_FREE(self->states);
 
@@ -39,17 +39,18 @@ METHOD(wfsm_region,public,void,add_state,
     (const struct wfsm_state* state))
 {
     W_DYNAMIC_ARRAY_PUSH(self->states, state);
-    if (state->flags & WFSM_STATE_INITIAL)
+    if (state->flags & WFSM_STATE_INITIAL) {
         if (self->start_state)
             printf("ERROR: Multiple initial states\n");
         else
             printf("Start set\n"),self->start_state = state;
+    }
 }
 
 METHOD(wfsm_region,public,void,add_transition,
     (const struct wfsm_transition* transition))
 {
-    W_CALL(transition->start,add_transition)(transition);
+    W_CALL(W_OBJECT_AS(transition->start,wfsm_state),add_transition)(transition);
 }
 
 METHOD(wfsm_region,public,void,set_start,
@@ -77,7 +78,7 @@ printf("Run queue: %d\n", W_DEQUE_GET_SIZE(self->events));
         struct wfsm_event event;
         W_DEQUE_POP_FRONT(self->events, event);
 printf("State: %p\n", self->current_state);
-        W_CALL(self->current_state,on_event)(&event);
+        W_CALL(W_OBJECT_AS(self->current_state,wfsm_state),on_event)(&event);
     }
 printf("Queue empty\n");
 }
