@@ -5,6 +5,7 @@
 
 #include "wfsm.h"
 #include "wfsm_region.h"
+#include "wfsm_state.h"
 
 
 /* Begin class implementation. */
@@ -15,7 +16,7 @@
 CONSTRUCT(wfsm) /* self */
 {
     self->orthogonal_regions = NULL;
-    self->default_region = W_NEW(wfsm_region, .owner = self);
+    self->default_region = W_NEW(wfsm_region, .owner = W_OBJECT_AS(self,wfsm));
     self->is_running = 0;
 
     W_DYNAMIC_ARRAY_PUSH(self->orthogonal_regions, self->default_region);
@@ -54,8 +55,8 @@ METHOD(wfsm,public,struct wfsm_transition*,add_transition,
 METHOD(wfsm,public,void,add_state_region,
     (const char* name))
 {
-    W_UNUSED(self);
-    W_UNUSED(name);
+    self->default_region = W_NEW(wfsm_region, .owner = W_OBJECT_AS(self,wfsm), .name = name);
+    W_DYNAMIC_ARRAY_PUSH(self->orthogonal_regions, self->default_region);
 }
 
 METHOD(wfsm,public,void,set_start,
@@ -75,22 +76,27 @@ METHOD(wfsm,public,void,start)
 }
 
 METHOD(wfsm,public,void,stop_by_final,
-   (struct wfsm_region* region, struct wfsm_state* state))
+   (struct wfsm_region* region, const struct wfsm_state* state))
 {
+    W_UNUSED(state);
     W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, r, self->orthogonal_regions)
-        if (r != region)
-            W_CALL_VOID(r,stop);
+        if (r != region && (r->current_state->flags & WFSM_STATE_FINAL))
+            W_CALL(r,push_event)(0,NULL);
     self->is_running = 0;
+    printf("Stopped\n");
 }
 
-METHOD(wfsm,public,void,run_queues)
+METHOD(wfsm,public,int,pop_queues)
 {
     if (!self->is_running) {
         printf("Error: not running\n");
-        return;
+        return 0;
     }
-    W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions)
-        W_CALL_VOID(region,run_queue);
+    int popped=0;
+    W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions) {
+        popped += W_CALL_VOID(region,pop_queue);
+    }
+    return popped;
 }
 
 METHOD(wfsm,public,void,push_event,

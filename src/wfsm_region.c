@@ -18,6 +18,9 @@ CONSTRUCT(wfsm_region) /* self */
     W_DEQUE_INIT(self->events, WFSM_EVENT_QUEUE_SIZE);
     self->transitions = NULL;
     self->start_state = self->current_state = NULL;
+    if (!self->name)
+        self->name = "default";
+    self->name = strdup(self->name);
 }
 
 FINALIZE(wfsm_region) /* self */
@@ -33,6 +36,7 @@ FINALIZE(wfsm_region) /* self */
     W_DYNAMIC_ARRAY_FREE(self->transitions);
 
     W_DEQUE_FREE(self->events);
+    free(self->name);
 }
 
 METHOD(wfsm_region,public,void,add_state,
@@ -66,11 +70,11 @@ METHOD(wfsm_region,public,void,set_state,
     (const struct wfsm_state* state))
 {
     self->current_state = state;
-    W_CALL_VOID(state,enter);
+    W_CALL_VOID(W_OBJECT_AS(state,wfsm_state),enter);
     if (self->current_state->flags & WFSM_STATE_FINAL)
-        W_CALL(self->owner,stop_by_final)(self,state);
+        W_CALL(W_OBJECT_AS(self->owner,wfsm),stop_by_final)(W_OBJECT_AS(self,wfsm_region),state);
 }
-
+// TODO: support 0 event and stopping
 METHOD(wfsm_region,public,void,start)
 {
     W_CALL(self,set_state)(self->start_state);
@@ -81,16 +85,16 @@ METHOD(wfsm_region,public,void,stop)
     // FIXME: todo
 }
 
-METHOD(wfsm_region,public,void,run_queue)
+METHOD(wfsm_region,public,int,pop_queue)
 {
-printf("Run queue: %d\n", W_DEQUE_GET_SIZE(self->events));
-    while (!W_DEQUE_IS_EMPTY(self->events)) {
-        struct wfsm_event event;
-        W_DEQUE_POP_FRONT(self->events, event);
-printf("State: %p\n", self->current_state);
-        W_CALL(W_OBJECT_AS(self->current_state,wfsm_state),on_event)(&event);
-    }
-printf("Queue empty\n");
+    if (W_DEQUE_IS_EMPTY(self->events))
+        return 0;
+
+    struct wfsm_event event;
+    W_DEQUE_POP_FRONT(self->events, event);
+printf("State: %s\n", self->current_state->name);
+    W_CALL(W_OBJECT_AS(self->current_state,wfsm_state),on_event)(&event);
+    return 1;
 }
 
 METHOD(wfsm_region,public,void,push_event,

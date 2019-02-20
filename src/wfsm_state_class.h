@@ -11,6 +11,7 @@
     METHOD(wfsm_state,public,void,add_transition,                        \
         (const struct wfsm_transition* transition))                      \
                                                                          \
+    VAR(read,struct wfsm_state*,super)                                   \
     VAR(read,char*,name)                                                 \
     VAR(read,enum wfsm_state_flags,flags)                                \
     VAR(private,struct wfsm_event_map*,events)                           \

@@ -44,9 +44,13 @@ METHOD(wfsm_state,public,void,on_event,
 {
     W_UNUSED(self);
     W_UNUSED(event);
-    printf("%u\n", event->event);
-    W_HASH_TABLE_FOR_EACH_MATCH(struct wfsm_event_map, match, self->events, event->event)
+    printf("event:%u\n", event->event);
+    if (!self->events)
+        return;
+    W_HASH_TABLE_FOR_EACH_MATCH(struct wfsm_event_map, match, self->events, event->event) {
+printf("%p\n", match);
         W_CALL(W_OBJECT_AS(match->value,wfsm_transition),try_on_event)(event);
+    }
 }
 
 #include <wondermacros/objects/x/class_end.h>
