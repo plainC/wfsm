@@ -25,8 +25,8 @@ FINALIZE(wfsm_transition) /* self */
 METHOD(wfsm_transition,public,void,take,
     (struct wfsm_event* event))
 {
-    if (self->transition_cb)
-        self->transition_cb((void*) self,event);
+    if (self->action_cb)
+        self->action_cb((void*) self,event);
 }
 
 METHOD(wfsm_transition,public,int,try_on_event,

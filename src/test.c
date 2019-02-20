@@ -12,8 +12,8 @@
  ( (C) (printf("In C\n");) (printf("Out of C\n");) )                       \
 
 #define TRANSITIONS                                                        \
- ( (A) (12) (B) )                                                          \
- ( (B) (8)  (C) )                                                          \
+ ( (A) (12) (B) (printf("Transition 1\n");) )                              \
+ ( (B) (8)  (C) (printf("Transition 2\n");) )                              \
 
 #define ADD_STATES(fsm,states)                                             \
    BOOST_PP_SEQ_FOR_EACH(_ADD_STATES,fsm,states)
@@ -30,7 +30,8 @@
     W_CALL(fsm,add_transition)(NULL, W_NEW(wfsm_transition,                \
         .start = W_CAT(state_,BOOST_PP_SEQ_ELEM(0,transition)),            \
         .event = BOOST_PP_SEQ_ELEM(1,transition),                          \
-        .target = W_CAT(state_,BOOST_PP_SEQ_ELEM(2,transition))));
+        .target = W_CAT(state_,BOOST_PP_SEQ_ELEM(2,transition)),           \
+        .action_cb = W_CAT(BOOST_PP_SEQ_ELEM(0,transition),_,BOOST_PP_SEQ_ELEM(1,transition))));
 
 #define BUILD_STATE_FUNCS(states)                                          \
     BOOST_PP_SEQ_FOR_EACH(_BUILD_STATE_FUNCS,~,states)
@@ -40,8 +41,15 @@
     void W_CAT(BOOST_PP_SEQ_ELEM(0,state),_exit)(struct wfsm_state* self)  \
     { W_UNUSED(self); BOOST_PP_SEQ_ELEM(2,state) }
 
+#define BUILD_TRANSITION_FUNCS(transitions)                                \
+    BOOST_PP_SEQ_FOR_EACH(_BUILD_TRANSITION_FUNCS,~,transitions)
+#define _BUILD_TRANSITION_FUNCS(z,data,transition)                                   \
+    void W_CAT(BOOST_PP_SEQ_ELEM(0,transition),_,BOOST_PP_SEQ_ELEM(1,transition))(struct wfsm_transition* self, struct wfsm_event* event) \
+    { W_UNUSED(self); BOOST_PP_SEQ_ELEM(3,transition) }                         \
+
 
 BUILD_STATE_FUNCS(STATES)
+BUILD_TRANSITION_FUNCS(TRANSITIONS)
 
 
 int main()
