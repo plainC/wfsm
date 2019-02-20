@@ -4,6 +4,7 @@
 
 
 #include "wfsm_state.h"
+#include "wfsm_transition.h"
 
 /* Begin class implementation. */
 #include "wfsm_state_class.h"
@@ -23,18 +24,19 @@ FINALIZE(wfsm_state) /* self */
 METHOD(wfsm_state,public,void,add_transition,
     const struct wfsm_transition* transition)
 {
-    W_UNUSED(self);
-    W_UNUSED(transition);
+    W_HASH_TABLE_PUSH(struct wfsm_event_map, self->events, transition->event, transition);
 }
 
 METHOD(wfsm_state,public,void,enter)
 {
-    W_UNUSED(self);
+    if (self->entry_cb)
+        self->entry_cb((void*) self);
 }
 
 METHOD(wfsm_state,public,void,exit)
 {
-    W_UNUSED(self);
+    if (self->exit_cb)
+        self->exit_cb((void*) self);
 }
 
 METHOD(wfsm_state,public,void,on_event,
@@ -42,6 +44,9 @@ METHOD(wfsm_state,public,void,on_event,
 {
     W_UNUSED(self);
     W_UNUSED(event);
+    printf("%u\n", event->event);
+    W_HASH_TABLE_FOR_EACH_MATCH(struct wfsm_event_map, match, self->events, event->event)
+        W_CALL(match->value,try_on_event)(event);
 }
 
 #include <wondermacros/objects/x/class_end.h>

@@ -3,6 +3,8 @@
 
 #include "wfsm.h"
 
+typedef void (*wfsm_transition_func)(struct wfsm_transition* self, struct wfsm_event* event);
+
 /* Build the header. */
 #include "wfsm_transition_class.h"
 #include <wondermacros/objects/x/class_declare.h>

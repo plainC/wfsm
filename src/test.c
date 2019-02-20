@@ -43,6 +43,7 @@
 
 BUILD_STATE_FUNCS(STATES)
 
+
 int main()
 {
     struct wfsm* fsm = W_NEW(wfsm);
@@ -51,7 +52,7 @@ int main()
     ADD_TRANSITIONS(fsm, TRANSITIONS);
     W_CALL(fsm,set_start)(NULL,state_A);
     W_CALL_VOID(fsm,start);
-    W_CALL(fsm,push_event)(22, "Foobar");
+    W_CALL(fsm,push_event)(12, "Foobar");
 
     W_CALL_VOID(fsm,run_queues);
 

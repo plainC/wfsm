@@ -29,7 +29,7 @@ struct wfsm_event {
 
 struct wfsm_event_map {
     WFSM_EVENT_TYPE key;
-    struct wfsm_transition* value;
+    const struct wfsm_transition* value;
 };
 
 /* Build the header. */
