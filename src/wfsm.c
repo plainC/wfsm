@@ -15,7 +15,8 @@
 CONSTRUCT(wfsm) /* self */
 {
     self->orthogonal_regions = NULL;
-    self->default_region = W_NEW(wfsm_region);
+    self->default_region = W_NEW(wfsm_region, .owner = self);
+    self->is_running = 0;
 
     W_DYNAMIC_ARRAY_PUSH(self->orthogonal_regions, self->default_region);
 }
@@ -68,12 +69,26 @@ METHOD(wfsm,public,void,set_start,
 
 METHOD(wfsm,public,void,start)
 {
+    self->is_running = 1;
     W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions)
         W_CALL_VOID(region,start);
 }
 
+METHOD(wfsm,public,void,stop_by_final,
+   (struct wfsm_region* region, struct wfsm_state* state))
+{
+    W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, r, self->orthogonal_regions)
+        if (r != region)
+            W_CALL_VOID(r,stop);
+    self->is_running = 0;
+}
+
 METHOD(wfsm,public,void,run_queues)
 {
+    if (!self->is_running) {
+        printf("Error: not running\n");
+        return;
+    }
     W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions)
         W_CALL_VOID(region,run_queue);
 }
@@ -81,6 +96,10 @@ METHOD(wfsm,public,void,run_queues)
 METHOD(wfsm,public,void,push_event,
     (WFSM_EVENT_TYPE event, void* data))
 {
+    if (!self->is_running) {
+        printf("Error: not running\n");
+        return;
+    }
     W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions)
         W_CALL(region,push_event)(event, data);
 }

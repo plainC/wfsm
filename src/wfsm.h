@@ -37,6 +37,9 @@ struct wfsm_event_map {
 #include "wfsm_class.h"
 #include <wondermacros/objects/x/class_declare.h>
 
+#include "wfsm_api.h"
+
+
 /*Unit Test*/
 
 #ifndef W_TEST

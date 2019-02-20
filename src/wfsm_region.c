@@ -56,19 +56,29 @@ METHOD(wfsm_region,public,void,add_transition,
 METHOD(wfsm_region,public,void,set_start,
     (struct wfsm_state* state))
 {
-    self->start_state = state;
+    if (self->start_state)
+        printf("ERROR: Start state already set\n");
+    else
+        self->start_state = state;
 }
 
 METHOD(wfsm_region,public,void,set_state,
     (const struct wfsm_state* state))
 {
     self->current_state = state;
+    W_CALL_VOID(state,enter);
+    if (self->current_state->flags & WFSM_STATE_FINAL)
+        W_CALL(self->owner,stop_by_final)(self,state);
 }
 
 METHOD(wfsm_region,public,void,start)
 {
-printf("Started:%p\n", self->start_state);
-    self->current_state = self->start_state;
+    W_CALL(self,set_state)(self->start_state);
+}
+
+METHOD(wfsm_region,public,void,stop)
+{
+    // FIXME: todo
 }
 
 METHOD(wfsm_region,public,void,run_queue)
