@@ -45,6 +45,11 @@ METHOD(wfsm,public,struct wfsm_transition*,add_transition,
     W_UNUSED(region);
     W_UNUSED(transition);
 
+    if (!region)
+        region = self->default_region;
+
+    W_CALL(region,add_transition)(transition);
+
     return transition;
 }
 
@@ -55,17 +60,32 @@ METHOD(wfsm,public,void,add_state_region,
     W_UNUSED(name);
 }
 
+METHOD(wfsm,public,void,set_start,
+    (struct wfsm_region* region, struct wfsm_state* state))
+{
+    if (!region)
+        region = self->default_region;
+
+    W_CALL(region,set_start)(state);
+}
+
 METHOD(wfsm,public,void,start)
 {
-    W_UNUSED(self);
+    W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions)
+        W_CALL_VOID(region,start);
+}
+
+METHOD(wfsm,public,void,run_queues)
+{
+    W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions)
+        W_CALL_VOID(region,run_queue);
 }
 
 METHOD(wfsm,public,void,push_event,
     (WFSM_EVENT_TYPE event, void* data))
 {
-    W_UNUSED(self);
-    W_UNUSED(event);
-    W_UNUSED(data);
+    W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions)
+        W_CALL(region,push_event)(event, data);
 }
 
 

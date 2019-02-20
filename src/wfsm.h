@@ -9,13 +9,28 @@
 # include <boost/preprocessor/variadic/size.hpp>
 # include <wondermacros/objects/api.h>
 # include <wondermacros/array/dynamic_array.h>
+# include <wondermacros/array/deque.h>
+# include <wondermacros/array/hash_table.h>
 #endif
-
-#define WFSM_EVENT_TYPE unsigned
 
 /* Forward declare all classes. */
 #define W_XMACRO <wondermacros/objects/x/forward_declare.h>
 #include "classes.h"
+
+
+
+#define WFSM_EVENT_TYPE unsigned
+#define WFSM_EVENT_QUEUE_SIZE 64
+
+struct wfsm_event {
+    WFSM_EVENT_TYPE event;
+    void* data;
+};
+
+struct wfsm_event_map {
+    WFSM_EVENT_TYPE key;
+    struct wfsm_transition* value;
+};
 
 /* Build the header. */
 #include "wfsm_class.h"

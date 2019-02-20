@@ -12,12 +12,19 @@
 
 CONSTRUCT(wfsm_state) /* self */
 {
-    W_UNUSED(self);
+    self->events = NULL;
 }
 
 FINALIZE(wfsm_state) /* self */
 {
     W_UNUSED(self);
+}
+
+METHOD(wfsm_state,public,void,add_transition,
+    const struct wfsm_transition* transition)
+{
+    W_UNUSED(self);
+    W_UNUSED(transition);
 }
 
 METHOD(wfsm_state,public,void,enter)
@@ -28,6 +35,13 @@ METHOD(wfsm_state,public,void,enter)
 METHOD(wfsm_state,public,void,exit)
 {
     W_UNUSED(self);
+}
+
+METHOD(wfsm_state,public,void,on_event,
+    (struct wfsm_event* event))
+{
+    W_UNUSED(self);
+    W_UNUSED(event);
 }
 
 #include <wondermacros/objects/x/class_end.h>

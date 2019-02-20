@@ -6,30 +6,30 @@
 #include <wondermacros/misc/unused.h>
 
 
-#define STATES \
- ( (A) (printf("In A\n");) (printf("Out of A\n");) ) \
- ( (B) (printf("In B\n");) (printf("Out of B\n");) ) \
- ( (C) (printf("In C\n");) (printf("Out of C\n");) ) \
+#define STATES                                                             \
+ ( (A) (printf("In A\n");) (printf("Out of A\n");) )                       \
+ ( (B) (printf("In B\n");) (printf("Out of B\n");) )                       \
+ ( (C) (printf("In C\n");) (printf("Out of C\n");) )                       \
 
-#define TRANSITIONS \
- ( (A) (12) (B) ) \
- ( (B) (8)  (C) ) \
+#define TRANSITIONS                                                        \
+ ( (A) (12) (B) )                                                          \
+ ( (B) (8)  (C) )                                                          \
 
-#define ADD_STATES(fsm,states)                                     \
+#define ADD_STATES(fsm,states)                                             \
    BOOST_PP_SEQ_FOR_EACH(_ADD_STATES,fsm,states)
-#define _ADD_STATES(z,fsm,state)                                   \
-   struct wfsm_state* W_CAT(state_,BOOST_PP_SEQ_ELEM(0,state)) = \
-        W_CALL(fsm,add_state)(NULL, W_NEW(wfsm_state,                  \
-        .name = W_STRINGIZE(BOOST_PP_SEQ_ELEM(0,state)),           \
-        .entry_cb = W_CAT(BOOST_PP_SEQ_ELEM(0,state),_entry),      \
+#define _ADD_STATES(z,fsm,state)                                           \
+   struct wfsm_state* W_CAT(state_,BOOST_PP_SEQ_ELEM(0,state)) =           \
+        W_CALL(fsm,add_state)(NULL, W_NEW(wfsm_state,                      \
+        .name = W_STRINGIZE(BOOST_PP_SEQ_ELEM(0,state)),                   \
+        .entry_cb = W_CAT(BOOST_PP_SEQ_ELEM(0,state),_entry),              \
         .exit_cb = W_CAT(BOOST_PP_SEQ_ELEM(0,state),_exit)));
 
-#define ADD_TRANSITIONS(fsm,transitions)                           \
+#define ADD_TRANSITIONS(fsm,transitions)                                   \
    BOOST_PP_SEQ_FOR_EACH(_ADD_TRANSITIONS,fsm,transitions)
-#define _ADD_TRANSITIONS(z,fsm,transition)                         \
-    W_CALL(fsm,add_transition)(NULL, W_NEW(wfsm_transition,        \
-        .start = W_CAT(state_,BOOST_PP_SEQ_ELEM(0,transition)),          \
-        .event = BOOST_PP_SEQ_ELEM(1,transition),         \
+#define _ADD_TRANSITIONS(z,fsm,transition)                                 \
+    W_CALL(fsm,add_transition)(NULL, W_NEW(wfsm_transition,                \
+        .start = W_CAT(state_,BOOST_PP_SEQ_ELEM(0,transition)),            \
+        .event = BOOST_PP_SEQ_ELEM(1,transition),                          \
         .target = W_CAT(state_,BOOST_PP_SEQ_ELEM(2,transition))));
 
 #define BUILD_STATE_FUNCS(states)                                          \
@@ -49,6 +49,11 @@ int main()
 
     ADD_STATES(fsm, STATES);
     ADD_TRANSITIONS(fsm, TRANSITIONS);
+    W_CALL(fsm,set_start)(NULL,state_A);
+    W_CALL_VOID(fsm,start);
+    W_CALL(fsm,push_event)(22, "Foobar");
+
+    W_CALL_VOID(fsm,run_queues);
 
     W_CALL_VOID(fsm,free);
 }

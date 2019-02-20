@@ -13,7 +13,10 @@
     METHOD(wfsm,public,void,add_state_region,                             \
         (const char* name))                                               \
                                                                           \
+    METHOD(wfsm,public,void,set_start,\
+        (struct wfsm_region* region, struct wfsm_state* state))                                  \
     METHOD(wfsm,public,void,start)                                        \
+    METHOD(wfsm,public,void,run_queues)                                   \
                                                                           \
     METHOD(wfsm,public,void,push_event,                                   \
         (WFSM_EVENT_TYPE event, void* data))                              \
