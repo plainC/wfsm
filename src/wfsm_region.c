@@ -54,6 +54,12 @@ METHOD(wfsm_region,public,void,set_start,
     self->start_state = state;
 }
 
+METHOD(wfsm_region,public,void,set_state,
+    (const struct wfsm_state* state))
+{
+    self->current_state = state;
+}
+
 METHOD(wfsm_region,public,void,start)
 {
 printf("Started:%p\n", self->start_state);
@@ -62,13 +68,14 @@ printf("Started:%p\n", self->start_state);
 
 METHOD(wfsm_region,public,void,run_queue)
 {
-printf("Run queue\n");
+printf("Run queue: %d\n", W_DEQUE_GET_SIZE(self->events));
     while (!W_DEQUE_IS_EMPTY(self->events)) {
         struct wfsm_event event;
         W_DEQUE_POP_FRONT(self->events, event);
 printf("State: %p\n", self->current_state);
         W_CALL(self->current_state,on_event)(&event);
     }
+printf("Queue empty\n");
 }
 
 METHOD(wfsm_region,public,void,push_event,
@@ -76,10 +83,15 @@ METHOD(wfsm_region,public,void,push_event,
 {
     struct wfsm_event e;
     e.event = event;
+    e.region = (void*) self;
     e.data = data;
 
     int is_full;
     W_DEQUE_PUSH_BACK(is_full, self->events, e);
+    if (is_full)
+        printf("ERROR: Queue full\n");
+    else
+        printf("Added event: %u to the queue\n", event);
 }
 
 #include <wondermacros/objects/x/class_end.h>

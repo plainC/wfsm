@@ -54,7 +54,7 @@ METHOD(wfsm,public,struct wfsm_transition*,add_transition,
 }
 
 METHOD(wfsm,public,void,add_state_region,
-        (const char* name))
+    (const char* name))
 {
     W_UNUSED(self);
     W_UNUSED(name);

@@ -13,12 +13,15 @@
         (struct wfsm_state* state))                                      \
     METHOD(wfsm_region,public,void,start)                                \
     METHOD(wfsm_region,public,void,run_queue)                            \
+    METHOD(wfsm_region,public,void,set_state,                            \
+        (const struct wfsm_state* state))                                \
+                                                                         \
                                                                          \
     METHOD(wfsm_region,public,void,push_event,                           \
         (WFSM_EVENT_TYPE event, void* data))                             \
                                                                          \
     VAR(private,struct wfsm_state*,start_state)                          \
-    VAR(read,struct wfsm_state*,current_state)                           \
+    VAR(read,const struct wfsm_state*,current_state)                     \
     VAR(private,struct wfsm_event*,events)                               \
     VAR(private,struct wfsm_state**,states)                              \
     VAR(private,struct wfsm_transition**,transitions)                    \

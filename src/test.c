@@ -50,9 +50,11 @@ int main()
 
     ADD_STATES(fsm, STATES);
     ADD_TRANSITIONS(fsm, TRANSITIONS);
+
     W_CALL(fsm,set_start)(NULL,state_A);
     W_CALL_VOID(fsm,start);
     W_CALL(fsm,push_event)(12, "Foobar");
+    W_CALL(fsm,push_event)(8, "Next");
 
     W_CALL_VOID(fsm,run_queues);
 

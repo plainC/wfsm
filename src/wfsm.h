@@ -20,10 +20,11 @@
 
 
 #define WFSM_EVENT_TYPE unsigned
-#define WFSM_EVENT_QUEUE_SIZE 64
+#define WFSM_EVENT_QUEUE_SIZE 3 /* ^ 2 */
 
 struct wfsm_event {
     WFSM_EVENT_TYPE event;
+    const struct wfsm_region* region;
     void* data;
 };
 
