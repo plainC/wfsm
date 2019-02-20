@@ -31,9 +31,10 @@ FINALIZE(wfsm) /* self */
 METHOD(wfsm,public,struct wfsm_state*,add_state,
     (struct wfsm_region* region, struct wfsm_state* state))
 {
-    W_UNUSED(self);
-    W_UNUSED(region);
-    W_UNUSED(state);
+    if (!region)
+        region = self->default_region;
+
+    W_CALL(region,add_state)(state);
 
     return state;
 }

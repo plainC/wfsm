@@ -7,9 +7,9 @@
 
 
 #define STATES                                                             \
- ( (A) (printf("In A\n");) (printf("Out of A\n");) )                       \
- ( (B) (printf("In B\n");) (printf("Out of B\n");) )                       \
- ( (C) (printf("In C\n");) (printf("Out of C\n");) )                       \
+ ( (A) (INITIAL) (printf("In A\n");) (printf("Out of A\n");) )                       \
+ ( (B) (NORMAL)  (printf("In B\n");) (printf("Out of B\n");) )                       \
+ ( (C) (FINAL)   (printf("In C\n");) (printf("Out of C\n");) )                       \
 
 #define TRANSITIONS                                                        \
  ( (A) (12) (B) (printf("Transition 1\n");) )                              \
@@ -21,6 +21,7 @@
    struct wfsm_state* W_CAT(state_,BOOST_PP_SEQ_ELEM(0,state)) =           \
         W_CALL(fsm,add_state)(NULL, W_NEW(wfsm_state,                      \
         .name = W_STRINGIZE(BOOST_PP_SEQ_ELEM(0,state)),                   \
+        .flags = W_CAT(WFSM_STATE_,BOOST_PP_SEQ_ELEM(1,state)),            \
         .entry_cb = W_CAT(BOOST_PP_SEQ_ELEM(0,state),_entry),              \
         .exit_cb = W_CAT(BOOST_PP_SEQ_ELEM(0,state),_exit)));
 
@@ -37,9 +38,9 @@
     BOOST_PP_SEQ_FOR_EACH(_BUILD_STATE_FUNCS,~,states)
 #define _BUILD_STATE_FUNCS(z,data,state)                                   \
     void W_CAT(BOOST_PP_SEQ_ELEM(0,state),_entry)(struct wfsm_state* self) \
-    { W_UNUSED(self); BOOST_PP_SEQ_ELEM(1,state) }                         \
+    { W_UNUSED(self); BOOST_PP_SEQ_ELEM(2,state) }                         \
     void W_CAT(BOOST_PP_SEQ_ELEM(0,state),_exit)(struct wfsm_state* self)  \
-    { W_UNUSED(self); BOOST_PP_SEQ_ELEM(2,state) }
+    { W_UNUSED(self); BOOST_PP_SEQ_ELEM(3,state) }
 
 #define BUILD_TRANSITION_FUNCS(transitions)                                \
     BOOST_PP_SEQ_FOR_EACH(_BUILD_TRANSITION_FUNCS,~,transitions)
@@ -59,7 +60,6 @@ int main()
     ADD_STATES(fsm, STATES);
     ADD_TRANSITIONS(fsm, TRANSITIONS);
 
-    W_CALL(fsm,set_start)(NULL,state_A);
     W_CALL_VOID(fsm,start);
     W_CALL(fsm,push_event)(12, "Foobar");
     W_CALL(fsm,push_event)(8, "Next");

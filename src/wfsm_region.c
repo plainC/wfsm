@@ -38,8 +38,12 @@ FINALIZE(wfsm_region) /* self */
 METHOD(wfsm_region,public,void,add_state,
     (const struct wfsm_state* state))
 {
-    W_UNUSED(self);
-    W_UNUSED(state);
+    W_DYNAMIC_ARRAY_PUSH(self->states, state);
+    if (state->flags & WFSM_STATE_INITIAL)
+        if (self->start_state)
+            printf("ERROR: Multiple initial states\n");
+        else
+            printf("Start set\n"),self->start_state = state;
 }
 
 METHOD(wfsm_region,public,void,add_transition,
