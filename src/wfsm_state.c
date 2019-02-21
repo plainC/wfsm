@@ -39,18 +39,24 @@ METHOD(wfsm_state,public,void,exit)
         self->exit_cb((void*) self);
 }
 
-METHOD(wfsm_state,public,void,on_event,
+METHOD(wfsm_state,public,int,on_event,
     (struct wfsm_event* event))
 {
     W_UNUSED(self);
     W_UNUSED(event);
     printf("event:%u\n", event->event);
     if (!self->events)
-        return;
+        return 0;
     W_HASH_TABLE_FOR_EACH_MATCH(struct wfsm_event_map, match, self->events, event->event) {
 printf("%p\n", match);
-        W_CALL(W_OBJECT_AS(match->value,wfsm_transition),try_on_event)(event);
+        if (W_CALL(W_OBJECT_AS(match->value,wfsm_transition),try_on_event)(event))
+            return 1;
     }
+    if (self->super)
+        if (W_CALL(self->super,on_event)(event))
+            return 1;
+    printf("Event: %u ignored in %s\n", event->event, self->name);
+    return 0;
 }
 
 #include <wondermacros/objects/x/class_end.h>

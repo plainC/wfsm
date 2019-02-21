@@ -6,7 +6,7 @@
                                                                          \
     METHOD(wfsm_state,public,void,enter)                                 \
     METHOD(wfsm_state,public,void,exit)                                  \
-    METHOD(wfsm_state,public,void,on_event,                              \
+    METHOD(wfsm_state,public,int,on_event,                               \
         (struct wfsm_event* event))                                      \
     METHOD(wfsm_state,public,void,add_transition,                        \
         (const struct wfsm_transition* transition))                      \

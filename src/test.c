@@ -12,6 +12,15 @@
  ( (A1) (12) (B1) (printf("Transition r1.1\n");) )                         \
  ( (B1) (8)  (C1) (printf("Transition r1.2\n");) )                         \
 
+#define STATES_R1Bsub                                                      \
+ ( (Bs1) (NORMAL) (printf("In r1.Bs1\n");) (printf("Out r1.Bs1\n");) )     \
+ ( (Bs2) (NORMAL) (printf("In r1.Bs2\n");) (printf("Out r1.Bs2\n");) )     \
+
+#define TRANSITIONS_R1Bsub                                                 \
+ ( (B1) (42) (Bs1) (printf("Transition to R1B\n");) )                      \
+ ( (Bs1) (7) (Bs2) (printf("Transition to Bs2\n");) )                      \
+ ( (Bs2) (5) (C1)  (printf("Transition to C1\n");) )                       \
+
 #define STATES_R2                                                          \
  ( (A2) (INITIAL) (printf("In r2.A\n");) (printf("Out of r2.A\n");) )      \
  ( (B2) (NORMAL)  (printf("In r2.B\n");) (printf("Out of r2.B\n");) )      \
@@ -28,6 +37,9 @@ BUILD_TRANSITION_FUNCS(TRANSITIONS_R1)
 BUILD_STATE_FUNCS(STATES_R2)
 BUILD_TRANSITION_FUNCS(TRANSITIONS_R2)
 
+BUILD_STATE_FUNCS(STATES_R1Bsub)
+BUILD_TRANSITION_FUNCS(TRANSITIONS_R1Bsub)
+
 
 int main()
 {
@@ -36,6 +48,9 @@ int main()
     {
         ADD_STATES(fsm, STATES_R1);
         ADD_TRANSITIONS(fsm, TRANSITIONS_R1);
+
+        ADD_STATES(fsm, STATES_R1Bsub, state_B1);
+        ADD_TRANSITIONS(fsm, TRANSITIONS_R1Bsub);
     }
 
     W_CALL(fsm,add_state_region)("R2");
@@ -48,6 +63,7 @@ int main()
 
     W_CALL_VOID(fsm,start);
     W_CALL(fsm,push_event)(12, "Foobar");
+    W_CALL(fsm,push_event)(42, "Go to substate");
     W_CALL(fsm,push_event)(8, "Next");
 
     while (W_CALL_VOID(fsm,pop_queues))

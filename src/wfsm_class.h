@@ -22,7 +22,7 @@
         (WFSM_EVENT_TYPE event, void* data))                              \
                                                                           \
     METHOD(wfsm,public,void,stop_by_final,                                \
-        (struct wfsm_region* region, const struct wfsm_state* state))           \
+        (struct wfsm_region* region, const struct wfsm_state* state))     \
                                                                           \
     VAR(public,int,is_running)                                            \
     VAR(private,struct wfsm_region**,orthogonal_regions)                  \

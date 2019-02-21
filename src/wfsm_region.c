@@ -92,12 +92,12 @@ METHOD(wfsm_region,public,int,pop_queue)
 
     struct wfsm_event event;
     W_DEQUE_POP_FRONT(self->events, event);
-printf("State: %s\n", self->current_state->name);
+
     W_CALL(W_OBJECT_AS(self->current_state,wfsm_state),on_event)(&event);
     return 1;
 }
 
-METHOD(wfsm_region,public,void,push_event,
+METHOD(wfsm_region,public,int,push_event,
     (WFSM_EVENT_TYPE event, void* data))
 {
     struct wfsm_event e;
@@ -108,9 +108,10 @@ METHOD(wfsm_region,public,void,push_event,
     int is_full;
     W_DEQUE_PUSH_BACK(is_full, self->events, e);
     if (is_full)
-        printf("ERROR: Queue full\n");
+        return 1;
     else
         printf("Added event: %u to the queue\n", event);
+    return 0;
 }
 
 #include <wondermacros/objects/x/class_end.h>

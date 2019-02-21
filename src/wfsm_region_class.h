@@ -18,7 +18,7 @@
         (const struct wfsm_state* state))                                \
                                                                          \
                                                                          \
-    METHOD(wfsm_region,public,void,push_event,                           \
+    METHOD(wfsm_region,public,int,push_event,                            \
         (WFSM_EVENT_TYPE event, void* data))                             \
                                                                          \
     VAR(read,char*,name)                                                 \
