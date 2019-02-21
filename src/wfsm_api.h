@@ -2,6 +2,8 @@
 #define __WFSM_API_H
 
 #include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/comparison/greater.hpp>
+#include <boost/preprocessor/control/expr_if.hpp>
 #include <wondermacros/meta/stringize.h>
 #include <wondermacros/misc/unused.h>
 
@@ -31,7 +33,9 @@
         .event = BOOST_PP_SEQ_ELEM(1,transition),                          \
         .target = W_CAT(state_,BOOST_PP_SEQ_ELEM(2,transition)),           \
         .action_cb = W_CAT(BOOST_PP_SEQ_ELEM(0,transition),_,              \
-            BOOST_PP_SEQ_ELEM(1,transition))));
+            BOOST_PP_SEQ_ELEM(1,transition)),                              \
+        .guard_cb = BOOST_PP_IF(BOOST_PP_GREATER(BOOST_PP_SEQ_SIZE(transition),4),\
+            W_CAT(BOOST_PP_SEQ_ELEM(0,transition),_guard),NULL)));
 
 #define BUILD_STATE_FUNCS(states)                                          \
     BOOST_PP_SEQ_FOR_EACH(_BUILD_STATE_FUNCS,~,states)
@@ -48,6 +52,11 @@
         BOOST_PP_SEQ_ELEM(1,transition))                                   \
         (struct wfsm_transition* self, struct wfsm_event* event)           \
     { W_UNUSED(self); W_UNUSED(event); BOOST_PP_SEQ_ELEM(3,transition) }   \
+    BOOST_PP_EXPR_IF(BOOST_PP_GREATER(BOOST_PP_SEQ_SIZE(transition),4),    \
+        int W_CAT(BOOST_PP_SEQ_ELEM(0,transition),_guard)                  \
+        (struct wfsm_transition* self, struct wfsm_event* event)           \
+    { W_UNUSED(self); W_UNUSED(event);                                     \
+        return (BOOST_PP_SEQ_ELEM(4,transition ())); })                    \
 
 #endif
 

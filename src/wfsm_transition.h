@@ -4,6 +4,8 @@
 #include "wfsm.h"
 
 typedef void (*wfsm_transition_func)(struct wfsm_transition* self, struct wfsm_event* event);
+typedef int (*wfsm_guard_func)(struct wfsm_transition* self, struct wfsm_event* event);
+
 
 /* Build the header. */
 #include "wfsm_transition_class.h"

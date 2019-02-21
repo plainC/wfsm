@@ -33,7 +33,7 @@ METHOD(wfsm_transition,public,int,try_on_event,
     (struct wfsm_event* event))
 {
     W_UNUSED(self);
-    if (0 /* guard check */)
+    if (self->guard_cb && !self->guard_cb(W_OBJECT_AS(self,wfsm_transition), event))
         return 0;
 
     if (self->target != self->start) {

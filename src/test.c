@@ -28,7 +28,7 @@
 
 #define TRANSITIONS_R2                                                     \
  ( (A2) (12) (B2) (printf("Transition r2.1\n");) )                         \
- ( (B2) (8)  (C2) (printf("Transition r2.2\n");) )                         \
+ ( (B2) (8)  (C2) (printf("Transition r2.2\n");) (1) )                     \
 
 
 BUILD_STATE_FUNCS(STATES_R1)
