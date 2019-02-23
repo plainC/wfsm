@@ -64,8 +64,8 @@ int main()
     struct wfsm* fsm = W_NEW(wfsm);
 
     {
-        ADD_STATES(fsm, STATES_TEST_01);
-        ADD_TRANSITIONS(fsm, TRANSITIONS_TEST_01);
+        ADD_STATES(fsm, STATES_TEST_01)
+        ADD_TRANSITIONS(fsm, TRANSITIONS_TEST_01)
     }
 
 #if 0

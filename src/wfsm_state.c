@@ -19,7 +19,10 @@ CONSTRUCT(wfsm_state) /* self */
 
 FINALIZE(wfsm_state) /* self */
 {
-    W_UNUSED(self);
+    W_HASH_TABLE_FOR_EACH(struct wfsm_event_map, map, self->events)
+        W_CALL_VOID(W_OBJECT_AS(map->value,wfsm_transition),free);
+
+    W_HASH_TABLE_FREE(self->events);
 }
 
 METHOD(wfsm_state,public,int,add_transition,

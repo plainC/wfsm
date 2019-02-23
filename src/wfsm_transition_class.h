@@ -4,8 +4,6 @@
     /* Inherits */                                                       \
       /*none */                                                          \
                                                                          \
-    METHOD(wfsm_transition,public,void,take,                             \
-        (struct wfsm_event* event))                                      \
     METHOD(wfsm_transition,public,int,try_on_event,                      \
         (struct wfsm_event* event))                                      \
                                                                          \
