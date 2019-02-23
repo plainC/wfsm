@@ -1,7 +1,9 @@
 #include "wfsm.h"
 #include "wfsm_state.h"
 #include "wfsm_transition.h"
+#include "wfsm_transition_self.h"
 
+/*
 
 #define STATES_TEST_01                                           \
  ( (A, INITIAL, printf("In A\n");, printf("Out of A\n");) )      \
@@ -33,7 +35,7 @@ BUILD_TRANSITION_FUNCS(TRANSITIONS_TEST_01)
 BUILD_STATE_FUNCS(STATES_TEST_02)
 BUILD_TRANSITION_FUNCS(TRANSITIONS_TEST_02)
 
-
+*/
 #if 0
 
 #define STATES_R1                                                          \
@@ -76,10 +78,44 @@ BUILD_TRANSITION_FUNCS(TRANSITIONS_R1Bsub)
 #endif
 
 
+void
+A_enter(struct wfsm_state* self)
+{
+    W_UNUSED(self);
+    printf("A in\n");
+}
+
+void
+A_exit(struct wfsm_state* self)
+{
+    W_UNUSED(self);
+    printf("A out\n");
+}
+
+void
+A_1(struct wfsm_state* self, struct wfsm_event* e)
+{
+    W_UNUSED(self);
+    W_UNUSED(e);
+    printf("A 1 transition\n");
+}
+
 int main()
 {
     struct wfsm* fsm = W_NEW(wfsm);
 
+    struct wfsm_state* A = W_CALL(fsm,add_state)(NULL,W_NEW(wfsm_state, .name="A", .flags=WFSM_STATE_INITIAL, .entry_cb=A_enter, .exit_cb=A_exit));
+    W_CALL(fsm,add_transition)(NULL,(void*)W_NEW(wfsm_transition_self,.start = A,.event=1,.action_cb=(void*)A_1));
+
+    W_CALL_VOID(fsm,start);
+    W_CALL(fsm,push_event)(1, "Foobar");
+
+    while (W_CALL_VOID(fsm,pop_queues))
+        ;
+
+    W_CALL_VOID(fsm,free);
+
+#if 0
     {
         ADD_STATES(fsm, STATES_TEST_01)
         ADD_TRANSITIONS(fsm, TRANSITIONS_TEST_01)
@@ -124,5 +160,6 @@ int main()
         ;
 
     W_CALL_VOID(fsm,free);
+#endif
 }
 
