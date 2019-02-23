@@ -17,6 +17,23 @@
 BUILD_STATE_FUNCS(STATES_TEST_01)
 BUILD_TRANSITION_FUNCS(TRANSITIONS_TEST_01)
 
+#define STATES_TEST_02                                           \
+ ( (A2, INITIAL, printf("In A2\n");, printf("Out of A2\n");) )      \
+ ( (B2, NORMAL , printf("In B2\n");, printf("Out of B2\n");) )      \
+ ( (C2, NORMAL , printf("In C2\n");, printf("Out of C2\n");) )      \
+ ( (D2, FINAL  , printf("In D2\n");, printf("Out of D2\n");) )      \
+
+#define TRANSITIONS_TEST_02                                      \
+ ( (NORMAL  , A2, 3, A2, printf("Self transition\n"); ))           \
+ ( (NORMAL  , A2, 8, B2, printf("Normal transition 1\n"); ))           \
+ ( (INTERNAL, B2, 3, B2, printf("Internal transition\n"); ))       \
+ ( (NORMAL  , B2, 8, C2, printf("Transition from B to C\n"); ))       \
+ ( (NORMAL  , C2, 8, D2, printf("Transition from C to D\n"); ))       \
+
+BUILD_STATE_FUNCS(STATES_TEST_02)
+BUILD_TRANSITION_FUNCS(TRANSITIONS_TEST_02)
+
+
 #if 0
 
 #define STATES_R1                                                          \
@@ -80,6 +97,28 @@ int main()
     W_CALL_VOID(fsm,start);
     W_CALL(fsm,push_event)(12, "Foobar");
     W_CALL(fsm,push_event)(8, "Next");
+
+    while (W_CALL_VOID(fsm,pop_queues))
+        ;
+
+    W_CALL_VOID(fsm,free);
+
+/**/
+    printf("----------------------------\n");
+
+    fsm = W_NEW(wfsm);
+
+    {
+        ADD_STATES(fsm, STATES_TEST_02)
+        ADD_TRANSITIONS(fsm, TRANSITIONS_TEST_02)
+    }
+
+    W_CALL_VOID(fsm,start);
+    W_CALL(fsm,push_event)(3, "Foobar");
+    W_CALL(fsm,push_event)(8, "Next");
+    W_CALL(fsm,push_event)(3, "Foobar");
+    W_CALL(fsm,push_event)(8, "Foobar");
+    W_CALL(fsm,push_event)(8, "Foobar");
 
     while (W_CALL_VOID(fsm,pop_queues))
         ;

@@ -40,16 +40,19 @@ FINALIZE(wfsm_region) /* self */
     free(self->name);
 }
 
-METHOD(wfsm_region,public,void,add_state,
+METHOD(wfsm_region,public,int,add_state,
     (const struct wfsm_state* state))
 {
     W_DYNAMIC_ARRAY_PUSH(self->states, state);
     if (state->flags & WFSM_STATE_INITIAL) {
-        if (self->start_state)
+        if (self->start_state) {
             printf("ERROR: Multiple initial states\n");
-        else
+            return 1;
+        } else
             self->start_state = state;
     }
+
+    return 0;
 }
 
 METHOD(wfsm_region,public,int,add_transition,
@@ -58,23 +61,27 @@ METHOD(wfsm_region,public,int,add_transition,
     return W_CALL(W_OBJECT_AS(transition->start,wfsm_state),add_transition)(transition);
 }
 
-METHOD(wfsm_region,public,void,set_start,
+METHOD(wfsm_region,public,int,set_start,
     (struct wfsm_state* state))
 {
-    if (self->start_state)
+    if (self->start_state) {
         printf("ERROR: Start state already set\n");
-    else
+        return 1;
+    } else
         self->start_state = state;
+
+    return 0;
 }
 
 
 static inline void
 exit_superstates_until_common(struct wfsm_region__private* self, const struct wfsm_state* target)
 {
+    W_CALL_VOID(W_OBJECT_AS(self->current_state,wfsm_state),exit);
+
     if (self->current_state == target)
         return;
 
-    W_CALL_VOID(W_OBJECT_AS(self->current_state,wfsm_state),exit);
     if (self->current_state->super) {
         self->current_state = self->current_state->super;
         exit_superstates_until_common(self, target);
@@ -118,14 +125,18 @@ METHOD(wfsm_region,public,void,on_transition,
     (const struct wfsm_transition* transition, struct wfsm_event* event))
 {
     /* Exit superstates until we are at the common level. */
-    exit_superstates_until_common(self, transition->target);
+    if (!(transition->flags & WFSM_TRANSITION_INTERNAL)) {
+        exit_superstates_until_common(self, transition->target);
+    }
 
     /* Run action of the transition if any. */
     if (transition->action_cb)
         transition->action_cb(W_OBJECT_AS(transition,wfsm_transition), event);
 
     /* Enter all superstates of transition->target if we are not there yet. */
-    enter_superstates_and_state(self, transition->target);
+    if (!(transition->flags & WFSM_TRANSITION_INTERNAL)) {
+        enter_superstates_and_state(self, transition->target);
+    }
 }
 
 // TODO: support 0 event and stopping
@@ -147,6 +158,7 @@ METHOD(wfsm_region,public,int,pop_queue)
     struct wfsm_event event;
     W_DEQUE_POP_FRONT(self->events, event);
 
+    printf(" Pop: %u\n", event.event);
     W_CALL(W_OBJECT_AS(self->current_state,wfsm_state),on_event)(&event);
     return 1;
 }

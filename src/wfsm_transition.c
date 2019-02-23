@@ -22,13 +22,6 @@ FINALIZE(wfsm_transition) /* self */
     W_UNUSED(self);
 }
 
-METHOD(wfsm_transition,public,void,take,
-    (struct wfsm_event* event))
-{
-    if (self->action_cb)
-        self->action_cb((void*) self,event);
-}
-
 METHOD(wfsm_transition,public,int,try_on_event,
     (struct wfsm_event* event))
 {

@@ -35,6 +35,10 @@ METHOD(wfsm_state,public,int,add_transition,
             self->auto_transition = transition;
     }
 
+    if (transition->flags & WFSM_TRANSITION_INTERNAL &&
+        transition->start != transition->target)
+        return 1;
+
     W_HASH_TABLE_PUSH(struct wfsm_event_map, self->events, transition->event, transition);
 
     return 0;
