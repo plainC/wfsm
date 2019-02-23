@@ -83,15 +83,10 @@ METHOD(wfsm,public,void,stop_by_final,
         if (r != region && (r->current_state->flags & WFSM_STATE_FINAL))
             W_CALL(r,push_event)(0,NULL);
     self->is_running = 0;
-    printf("Stopped\n");
 }
 
 METHOD(wfsm,public,int,pop_queues)
 {
-    if (!self->is_running) {
-        printf("Error: not running\n");
-        return 0;
-    }
     int popped=0;
     W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions) {
         popped += W_CALL_VOID(region,pop_queue);

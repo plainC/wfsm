@@ -29,7 +29,7 @@ METHOD(wfsm_state,public,int,add_transition,
         if (self->auto_transition)
             return 1;
         else
-            printf("AUTO SET\n"),self->auto_transition = transition;
+            self->auto_transition = transition;
     }
 
     W_HASH_TABLE_PUSH(struct wfsm_event_map, self->events, transition->event, transition);
@@ -54,7 +54,7 @@ METHOD(wfsm_state,public,int,on_event,
 {
     W_UNUSED(self);
     W_UNUSED(event);
-    printf("event:%u\n", event->event);
+
     if (!self->events)
         return 0;
     W_HASH_TABLE_FOR_EACH_MATCH(struct wfsm_event_map, match, self->events, event->event) {
@@ -66,7 +66,9 @@ METHOD(wfsm_state,public,int,on_event,
     if (self->super)
         if (W_CALL(self->super,on_event)(event))
             return 1;
-    printf("Event: %u ignored in %s\n", event->event, self->name);
+
+    printf(" Event: %u ignored by %s\n", event->event, self->name);
+
     return 0;
 }
 

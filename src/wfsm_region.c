@@ -48,7 +48,7 @@ METHOD(wfsm_region,public,void,add_state,
         if (self->start_state)
             printf("ERROR: Multiple initial states\n");
         else
-            printf("Start set\n"),self->start_state = state;
+            self->start_state = state;
     }
 }
 
@@ -69,6 +69,19 @@ METHOD(wfsm_region,public,void,set_start,
 
 
 static inline void
+exit_superstates_until_common(struct wfsm_region__private* self, const struct wfsm_state* target)
+{
+    if (self->current_state == target)
+        return;
+
+    W_CALL_VOID(W_OBJECT_AS(self->current_state,wfsm_state),exit);
+    if (self->current_state->super) {
+        self->current_state = self->current_state->super;
+        exit_superstates_until_common(self, target);
+    }
+}
+
+static inline void
 enter_superstates_and_state(struct wfsm_region__private* self, const struct wfsm_state* target)
 {
     const struct wfsm_state** superstates = NULL;
@@ -82,26 +95,23 @@ enter_superstates_and_state(struct wfsm_region__private* self, const struct wfsm
         state = W_DYNAMIC_STACK_POP(superstates);
         W_CALL_VOID(W_OBJECT_AS(state,wfsm_state),enter);
         self->current_state = state;
-        if (state->auto_transition && 
-            (!state->auto_transition->guard_cb || 
-             state->auto_transition->guard_cb(W_OBJECT_AS(state->auto_transition,wfsm_transition), NULL)))
-            W_CALL(self,on_transition)(state->auto_transition, NULL);
+        int transitions;
+        do {
+            transitions = 0;
+            if (self->current_state->flags & WFSM_STATE_FINAL) {
+                exit_superstates_until_common(self, NULL);
+                W_CALL(W_OBJECT_AS(self->owner,wfsm),stop_by_final)(W_OBJECT_AS(self,wfsm_region),self->current_state);
+            }
+            if (self->current_state->auto_transition && 
+                (!self->current_state->auto_transition->guard_cb || 
+                 self->current_state->auto_transition->guard_cb(W_OBJECT_AS(self->current_state->auto_transition,wfsm_transition), NULL))) {
+                W_CALL(self,on_transition)(self->current_state->auto_transition, NULL);
+                transitions = 1;
+            }
+        } while (transitions);
     }
 
     W_DYNAMIC_STACK_FREE(superstates);
-}
-
-static inline void
-exit_superstates_until_common(struct wfsm_region__private* self, const struct wfsm_state* target)
-{
-    if (self->current_state == target)
-        return;
-
-    W_CALL_VOID(W_OBJECT_AS(self->current_state,wfsm_state),exit);
-    if (self->current_state->super) {
-        self->current_state = self->current_state->super;
-        exit_superstates_until_common(self, target);
-    }
 }
 
 METHOD(wfsm_region,public,void,on_transition,
@@ -154,7 +164,7 @@ METHOD(wfsm_region,public,int,push_event,
     if (is_full)
         return 1;
     else
-        printf("Added event: %u to the queue\n", event);
+        printf(" push event: %u\n", event);
     return 0;
 }
 

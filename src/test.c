@@ -3,14 +3,16 @@
 #include "wfsm_transition.h"
 
 
-#define STATES_TEST_01                                         \
+#define STATES_TEST_01                                           \
  ( (A, INITIAL, printf("In A\n");, printf("Out of A\n");) )      \
  ( (B, NORMAL , printf("In B\n");, printf("Out of B\n");) )      \
- ( (C, FINAL  , printf("In C\n");, printf("Out of C\n");) )      \
+ ( (C, NORMAL , printf("In C\n");, printf("Out of C\n");) )      \
+ ( (D, FINAL  , printf("In D\n");, printf("Out of D\n");) )      \
 
-#define TRANSITIONS_TEST_01                                    \
- ( (AUTO  , A, 0, B, printf("Auto transition\n"); ))             \
- ( (NORMAL, B, 8, C, printf("Transition to B\n"); ))             \
+#define TRANSITIONS_TEST_01                                      \
+ ( (AUTO  , A, 0, B, printf("Auto transition 1\n"); ))           \
+ ( (AUTO  , B, 0, C, printf("Auto transition 2\n"); ))           \
+ ( (NORMAL, C, 8, D, printf("Transition fro C to D\n"); ))       \
 
 BUILD_STATE_FUNCS(STATES_TEST_01)
 BUILD_TRANSITION_FUNCS(TRANSITIONS_TEST_01)
