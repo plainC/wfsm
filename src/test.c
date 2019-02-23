@@ -2,6 +2,7 @@
 #include "wfsm_state.h"
 #include "wfsm_transition.h"
 #include "wfsm_transition_self.h"
+#include "wfsm_transition_internal.h"
 
 /*
 
@@ -105,7 +106,7 @@ int main()
     struct wfsm* fsm = W_NEW(wfsm);
 
     struct wfsm_state* A = W_CALL(fsm,add_state)(NULL,W_NEW(wfsm_state, .name="A", .flags=WFSM_STATE_INITIAL, .entry_cb=A_enter, .exit_cb=A_exit));
-    W_CALL(fsm,add_transition)(NULL,(void*)W_NEW(wfsm_transition_self,.start = A,.event=1,.action_cb=(void*)A_1));
+    W_CALL(fsm,add_transition)(NULL,(void*)W_NEW(wfsm_transition_internal,.start = A,.event=1,.action_cb=(void*)A_1));
 
     W_CALL_VOID(fsm,start);
     W_CALL(fsm,push_event)(1, "Foobar");
