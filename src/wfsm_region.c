@@ -17,7 +17,7 @@ CONSTRUCT(wfsm_region) /* self */
 {
     self->states = NULL;
     W_DEQUE_INIT(self->events, WFSM_EVENT_QUEUE_SIZE);
-    self->transitions = NULL;
+
     self->start_state = self->current_state = NULL;
     if (!self->name)
         self->name = "default";
@@ -31,11 +31,6 @@ FINALIZE(wfsm_region) /* self */
 
     W_DYNAMIC_ARRAY_FREE(self->states);
 
-    W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_transition*, transition, self->transitions)
-        W_CALL_VOID(transition,free);
-
-    W_DYNAMIC_ARRAY_FREE(self->transitions);
-
     W_DEQUE_FREE(self->events);
     free(self->name);
 }
@@ -44,6 +39,7 @@ METHOD(wfsm_region,public,int,add_state,
     (const struct wfsm_state* state))
 {
     W_DYNAMIC_ARRAY_PUSH(self->states, state);
+
     if (state->flags & WFSM_STATE_INITIAL) {
         if (self->start_state) {
             printf("ERROR: Multiple initial states\n");
@@ -139,10 +135,14 @@ METHOD(wfsm_region,public,void,on_transition,
     }
 }
 
-// TODO: support 0 event and stopping
-METHOD(wfsm_region,public,void,start)
+METHOD(wfsm_region,public,int,start)
 {
+    if (! self->start_state)
+        return 1;
+
     enter_superstates_and_state(self, self->start_state);
+
+    return 0;
 }
 
 METHOD(wfsm_region,public,void,stop)

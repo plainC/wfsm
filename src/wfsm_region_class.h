@@ -11,7 +11,7 @@
                                                                          \
     METHOD(wfsm_region,public,int,set_start,                             \
         (struct wfsm_state* state))                                      \
-    METHOD(wfsm_region,public,void,start)                                \
+    METHOD(wfsm_region,public,int,start)                                 \
     METHOD(wfsm_region,public,int,pop_queue)                             \
     METHOD(wfsm_region,public,void,stop)                                 \
     METHOD(wfsm_region,public,void,on_transition,                        \
@@ -27,6 +27,5 @@
     VAR(read,const struct wfsm_state*,current_state)                     \
     VAR(private,struct wfsm_event*,events)                               \
     VAR(private,const struct wfsm_state**,states)                        \
-    VAR(private,struct wfsm_transition**,transitions)                    \
                                                                          \
     /**/
