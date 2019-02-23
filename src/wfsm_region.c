@@ -10,6 +10,7 @@
 /* Begin class implementation. */
 #include "wfsm_region_class.h"
 #include <wondermacros/objects/x/class_start.h>
+#include <wondermacros/array/dynamic_stack.h>
 
 
 CONSTRUCT(wfsm_region) /* self */
@@ -51,10 +52,10 @@ METHOD(wfsm_region,public,void,add_state,
     }
 }
 
-METHOD(wfsm_region,public,void,add_transition,
+METHOD(wfsm_region,public,int,add_transition,
     (const struct wfsm_transition* transition))
 {
-    W_CALL(W_OBJECT_AS(transition->start,wfsm_state),add_transition)(transition);
+    return W_CALL(W_OBJECT_AS(transition->start,wfsm_state),add_transition)(transition);
 }
 
 METHOD(wfsm_region,public,void,set_start,
@@ -66,18 +67,61 @@ METHOD(wfsm_region,public,void,set_start,
         self->start_state = state;
 }
 
-METHOD(wfsm_region,public,void,set_state,
-    (const struct wfsm_state* state))
+
+static inline void
+enter_superstates_and_state(struct wfsm_region__private* self, const struct wfsm_state* target)
 {
-    self->current_state = state;
-    W_CALL_VOID(W_OBJECT_AS(state,wfsm_state),enter);
-    if (self->current_state->flags & WFSM_STATE_FINAL)
-        W_CALL(W_OBJECT_AS(self->owner,wfsm),stop_by_final)(W_OBJECT_AS(self,wfsm_region),state);
+    const struct wfsm_state** superstates = NULL;
+    const struct wfsm_state* state = target;
+    while (state) {
+        W_DYNAMIC_STACK_PUSH(superstates, state);
+        state = state->super;
+    }
+
+    while (!W_DYNAMIC_STACK_IS_EMPTY(superstates)) {
+        state = W_DYNAMIC_STACK_POP(superstates);
+        W_CALL_VOID(W_OBJECT_AS(state,wfsm_state),enter);
+        self->current_state = state;
+        if (state->auto_transition && 
+            (!state->auto_transition->guard_cb || 
+             state->auto_transition->guard_cb(W_OBJECT_AS(state->auto_transition,wfsm_transition), NULL)))
+            W_CALL(self,on_transition)(state->auto_transition, NULL);
+    }
+
+    W_DYNAMIC_STACK_FREE(superstates);
 }
+
+static inline void
+exit_superstates_until_common(struct wfsm_region__private* self, const struct wfsm_state* target)
+{
+    if (self->current_state == target)
+        return;
+
+    W_CALL_VOID(W_OBJECT_AS(self->current_state,wfsm_state),exit);
+    if (self->current_state->super) {
+        self->current_state = self->current_state->super;
+        exit_superstates_until_common(self, target);
+    }
+}
+
+METHOD(wfsm_region,public,void,on_transition,
+    (const struct wfsm_transition* transition, struct wfsm_event* event))
+{
+    /* Exit superstates until we are at the common level. */
+    exit_superstates_until_common(self, transition->target);
+
+    /* Run action of the transition if any. */
+    if (transition->action_cb)
+        transition->action_cb(W_OBJECT_AS(transition,wfsm_transition), event);
+
+    /* Enter all superstates of transition->target if we are not there yet. */
+    enter_superstates_and_state(self, transition->target);
+}
+
 // TODO: support 0 event and stopping
 METHOD(wfsm_region,public,void,start)
 {
-    W_CALL(self,set_state)(self->start_state);
+    enter_superstates_and_state(self, self->start_state);
 }
 
 METHOD(wfsm_region,public,void,stop)

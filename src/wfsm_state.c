@@ -4,6 +4,7 @@
 
 
 #include "wfsm_state.h"
+#include "wfsm_region.h"
 #include "wfsm_transition.h"
 
 /* Begin class implementation. */
@@ -21,10 +22,19 @@ FINALIZE(wfsm_state) /* self */
     W_UNUSED(self);
 }
 
-METHOD(wfsm_state,public,void,add_transition,
+METHOD(wfsm_state,public,int,add_transition,
     (const struct wfsm_transition* transition))
 {
+    if (transition->flags & WFSM_TRANSITION_AUTO) {
+        if (self->auto_transition)
+            return 1;
+        else
+            printf("AUTO SET\n"),self->auto_transition = transition;
+    }
+
     W_HASH_TABLE_PUSH(struct wfsm_event_map, self->events, transition->event, transition);
+
+    return 0;
 }
 
 METHOD(wfsm_state,public,void,enter)
@@ -48,9 +58,10 @@ METHOD(wfsm_state,public,int,on_event,
     if (!self->events)
         return 0;
     W_HASH_TABLE_FOR_EACH_MATCH(struct wfsm_event_map, match, self->events, event->event) {
-printf("%p\n", match);
-        if (W_CALL(W_OBJECT_AS(match->value,wfsm_transition),try_on_event)(event))
+        if (!match->value->guard_cb || match->value->guard_cb(W_OBJECT_AS(match->value,wfsm_transition), event)) {
+            W_CALL(self->region,on_transition)(match->value, event);
             return 1;
+        }
     }
     if (self->super)
         if (W_CALL(self->super,on_event)(event))

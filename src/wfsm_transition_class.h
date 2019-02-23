@@ -15,4 +15,6 @@
     VAR(read,struct wfsm_state*,start)                                   \
     VAR(read,WFSM_EVENT_TYPE,event)                                      \
     VAR(read,struct wfsm_state*,target)                                  \
+                                                                         \
+    VAR(read,int,flags)                                                  \
     /**/

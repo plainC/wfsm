@@ -6,7 +6,7 @@
                                                                          \
     METHOD(wfsm_region,public,void,add_state,                            \
         (const struct wfsm_state* state))                                \
-    METHOD(wfsm_region,public,void,add_transition,                       \
+    METHOD(wfsm_region,public,int,add_transition,                        \
         (const struct wfsm_transition* transition))                      \
                                                                          \
     METHOD(wfsm_region,public,void,set_start,                            \
@@ -14,8 +14,8 @@
     METHOD(wfsm_region,public,void,start)                                \
     METHOD(wfsm_region,public,int,pop_queue)                             \
     METHOD(wfsm_region,public,void,stop)                                 \
-    METHOD(wfsm_region,public,void,set_state,                            \
-        (const struct wfsm_state* state))                                \
+    METHOD(wfsm_region,public,void,on_transition,                        \
+        (const struct wfsm_transition* transition, struct wfsm_event* event))                      \
                                                                          \
                                                                          \
     METHOD(wfsm_region,public,int,push_event,                            \

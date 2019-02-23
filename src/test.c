@@ -3,6 +3,20 @@
 #include "wfsm_transition.h"
 
 
+#define STATES_TEST_01                                         \
+ ( (A, INITIAL, printf("In A\n");, printf("Out of A\n");) )      \
+ ( (B, NORMAL , printf("In B\n");, printf("Out of B\n");) )      \
+ ( (C, FINAL  , printf("In C\n");, printf("Out of C\n");) )      \
+
+#define TRANSITIONS_TEST_01                                    \
+ ( (AUTO  , A, 0, B, printf("Auto transition\n"); ))             \
+ ( (NORMAL, B, 8, C, printf("Transition to B\n"); ))             \
+
+BUILD_STATE_FUNCS(STATES_TEST_01)
+BUILD_TRANSITION_FUNCS(TRANSITIONS_TEST_01)
+
+#if 0
+
 #define STATES_R1                                                          \
  ( (A1) (INITIAL) (printf("In r1.A\n");) (printf("Out of r1.A\n");) )      \
  ( (B1) (NORMAL)  (printf("In r1.B\n");) (printf("Out of r1.B\n");) )      \
@@ -40,19 +54,19 @@ BUILD_TRANSITION_FUNCS(TRANSITIONS_R2)
 BUILD_STATE_FUNCS(STATES_R1Bsub)
 BUILD_TRANSITION_FUNCS(TRANSITIONS_R1Bsub)
 
+#endif
+
 
 int main()
 {
     struct wfsm* fsm = W_NEW(wfsm);
 
     {
-        ADD_STATES(fsm, STATES_R1);
-        ADD_TRANSITIONS(fsm, TRANSITIONS_R1);
-
-        ADD_STATES(fsm, STATES_R1Bsub, state_B1);
-        ADD_TRANSITIONS(fsm, TRANSITIONS_R1Bsub);
+        ADD_STATES(fsm, STATES_TEST_01);
+        ADD_TRANSITIONS(fsm, TRANSITIONS_TEST_01);
     }
 
+#if 0
     W_CALL(fsm,add_state_region)("R2");
 
     {
@@ -60,10 +74,9 @@ int main()
         ADD_TRANSITIONS(fsm, TRANSITIONS_R2);
     }
 
-
+#endif
     W_CALL_VOID(fsm,start);
     W_CALL(fsm,push_event)(12, "Foobar");
-    W_CALL(fsm,push_event)(42, "Go to substate");
     W_CALL(fsm,push_event)(8, "Next");
 
     while (W_CALL_VOID(fsm,pop_queues))

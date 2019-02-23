@@ -6,6 +6,13 @@
 typedef void (*wfsm_transition_func)(struct wfsm_transition* self, struct wfsm_event* event);
 typedef int (*wfsm_guard_func)(struct wfsm_transition* self, struct wfsm_event* event);
 
+enum wfsm_transition_flags {
+    WFSM_TRANSITION_NORMAL   = 0,
+    WFSM_TRANSITION_LOCAL    = 1,
+    WFSM_TRANSITION_INTERNAL = 2,
+    WFSM_TRANSITION_AUTO     = 4,
+    WFSM_TRANSITION_INITIAL  = 8,
+};
 
 /* Build the header. */
 #include "wfsm_transition_class.h"
