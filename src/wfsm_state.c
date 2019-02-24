@@ -3,6 +3,7 @@
 #endif
 
 
+#include "wfsm_state_initial.h"
 #include "wfsm_state.h"
 #include "wfsm_region.h"
 #include "wfsm_transition.h"

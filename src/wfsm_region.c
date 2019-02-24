@@ -6,6 +6,7 @@
 #include "wfsm_region.h"
 #include "wfsm_transition.h"
 #include "wfsm_state_pseudo.h"
+#include "wfsm_state_initial.h"
 
 /* Begin class implementation. */
 #include "wfsm_region_class.h"
@@ -38,16 +39,15 @@ FINALIZE(wfsm_region) /* self */
 METHOD(wfsm_region,public,int,add_state,
     (struct wfsm_state_pseudo* state))
 {
+    if (W_OBJECT_IS(state,wfsm_state_initial)) {
+        if (self->start_state)
+            return 1; /* Multiple start states. */
+        else
+            self->start_state = state;
+    }
+
     state->region = W_OBJECT_AS(self,wfsm_region);
     W_DYNAMIC_ARRAY_PUSH(self->states, state);
-
-//    if (state->flags & WFSM_STATE_INITIAL) {
-        if (self->start_state) {
-            printf("ERROR: Multiple initial states\n");
-            return 1;
-        } else
-            self->start_state = (void*) state;
- //   }
 
     return 0;
 }

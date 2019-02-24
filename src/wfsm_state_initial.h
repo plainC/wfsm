@@ -2,7 +2,7 @@
 #define __WFSM_STATE_INITIAL_H
 
 #include "wfsm.h"
-#include "wfsm_state.h"
+#include "wfsm_state_pseudo.h"
 
 /* Build the header. */
 #include "wfsm_state_initial_class.h"
@@ -13,6 +13,13 @@
 #ifndef W_TEST
 # define W_TEST(...)
 #endif
+
+
+#ifndef W_TEST_GROUP
+# define W_TEST_GROUP(...)
+#endif
+
+W_TEST_GROUP("States")
 
 W_TEST(wfsm_state_initial,
     struct wfsm* fsm = W_NEW(wfsm);

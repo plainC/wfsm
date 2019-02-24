@@ -3,6 +3,7 @@
 
 #include "wfsm.h"
 #include "wfsm_state_pseudo.h"
+#include "wfsm_state_initial.h"
 
 typedef void (*wfsm_state_func)(struct wfsm_state* self);
 
@@ -17,8 +18,20 @@ typedef void (*wfsm_state_func)(struct wfsm_state* self);
 # define W_TEST(...)
 #endif
 
-#ifndef W_TEST_GROUP
-# define W_TEST_GROUP(...)
-#endif
+W_TEST(wfsm_state,
+    struct wfsm* fsm = W_NEW(wfsm);
+
+    struct wfsm_state_pseudo* I = (void*)
+        W_CALL(fsm,add_state)(NULL, (void*) W_NEW(wfsm_state_initial));
+
+    struct wfsm_state* A = (void*)
+        W_CALL(fsm,add_state)(NULL, (void*) W_NEW(wfsm_state, .name="A"));
+
+    W_CALL_VOID(fsm,start);
+
+    W_TEST_ASSERT(fsm->default_region->current_state == I, "fsm start failed");
+
+    W_CALL_VOID(fsm,free);
+)
 
 #endif
