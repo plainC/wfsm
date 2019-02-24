@@ -167,7 +167,7 @@ METHOD(wfsm_region,public,int,pop_queue)
     W_DEQUE_POP_FRONT(self->events, event);
 
     printf(" Pop: %u\n", event.event);
-//    W_CALL(W_OBJECT_AS(self->current_state,wfsm_state),on_event)(&event);
+    W_CALL(W_OBJECT_AS(self->current_state,wfsm_state_pseudo),on_event)(&event);
     return 1;
 }
 

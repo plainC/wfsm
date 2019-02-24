@@ -3,20 +3,20 @@
 #endif
 
 
-#include "wfsm_transition_auto.h"
+#include "wfsm_transition_normal.h"
 #include "wfsm_state.h"
 
 /* Begin class implementation. */
-#include "wfsm_transition_auto_class.h"
+#include "wfsm_transition_normal_class.h"
 #include <wondermacros/objects/x/class_start.h>
 
 
-CONSTRUCT(wfsm_transition_auto) /* self */
+CONSTRUCT(wfsm_transition_normal) /* self */
 {
     W_UNUSED(self);
 }
 
-FINALIZE(wfsm_transition_auto) /* self */
+FINALIZE(wfsm_transition_normal) /* self */
 {
     W_UNUSED(self);
 }

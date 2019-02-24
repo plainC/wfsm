@@ -58,17 +58,13 @@ METHOD(wfsm_state_pseudo,public,int,on_event,
 
     if (!self->events)
         return 0;
-    W_HASH_TABLE_FOR_EACH_MATCH(struct wfsm_event_map, match, self->events, event->event) {
-//        if (!match->value->guard_cb || match->value->guard_cb(W_OBJECT_AS(match->value,wfsm_transition), event)) {
-            if (W_CALL(W_OBJECT_AS(match->value,wfsm_transition),try_on_event)(event)) //W_CALL(self->region,on_transition)(match->value, event);
-            return 1;
-  //      }
-    }
-//    if (self->super)
- //       if (W_CALL(self->super,on_event)(event))
-            return 1;
 
-//    printf(" Event: %u ignored by %s\n", event->event, self->name);
+    W_HASH_TABLE_FOR_EACH_MATCH(struct wfsm_event_map, match, self->events,
+        event->event) {
+        if (W_CALL(W_OBJECT_AS(match->value,wfsm_transition),try_on_event)
+            (event))
+            return 1;
+    }
 
     return 0;
 }
