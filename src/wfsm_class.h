@@ -4,8 +4,8 @@
     /* Inherits */                                                        \
       /*none */                                                           \
                                                                           \
-    METHOD(wfsm,public,struct wfsm_state*,add_state,                      \
-        (struct wfsm_region* region, struct wfsm_state* state))           \
+    METHOD(wfsm,public,struct wfsm_state_pseudo*,add_state,                      \
+        (struct wfsm_region* region, struct wfsm_state_pseudo* state))           \
                                                                           \
     METHOD(wfsm,public,struct wfsm_transition*,add_transition,            \
         (struct wfsm_region* region, struct wfsm_transition* transition)) \
@@ -14,7 +14,7 @@
         (const char* name))                                               \
                                                                           \
     METHOD(wfsm,public,void,set_start,                                    \
-        (struct wfsm_region* region, struct wfsm_state* state))           \
+        (struct wfsm_region* region, struct wfsm_state_pseudo* state))           \
     METHOD(wfsm,public,void,start)                                        \
     METHOD(wfsm,public,int,pop_queues)                                    \
                                                                           \

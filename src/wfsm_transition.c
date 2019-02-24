@@ -4,7 +4,7 @@
 
 
 #include "wfsm_transition.h"
-#include "wfsm_state.h"
+#include "wfsm_state_pseudo.h"
 #include "wfsm_region.h"
 
 /* Begin class implementation. */

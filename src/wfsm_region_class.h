@@ -5,12 +5,12 @@
       /*none */                                                          \
                                                                          \
     METHOD(wfsm_region,public,int,add_state,                             \
-        (const struct wfsm_state* state))                                \
+        (const struct wfsm_state_pseudo* state))                         \
     METHOD(wfsm_region,public,int,add_transition,                        \
         (const struct wfsm_transition* transition))                      \
                                                                          \
     METHOD(wfsm_region,public,int,set_start,                             \
-        (struct wfsm_state* state))                                      \
+        (struct wfsm_state_pseudo* state))                                      \
     METHOD(wfsm_region,public,int,start)                                 \
     METHOD(wfsm_region,public,int,pop_queue)                             \
     METHOD(wfsm_region,public,void,stop)                                 \
@@ -23,9 +23,9 @@
                                                                          \
     VAR(read,char*,name)                                                 \
     VAR(read,const struct wfsm*,owner)                                   \
-    VAR(private,const struct wfsm_state*,start_state)                    \
-    VAR(read,const struct wfsm_state*,current_state)                     \
+    VAR(private,const struct wfsm_state_pseudo*,start_state)                    \
+    VAR(read,const struct wfsm_state_pseudo*,current_state)                     \
     VAR(private,struct wfsm_event*,events)                               \
-    VAR(private,const struct wfsm_state**,states)                        \
+    VAR(private,const struct wfsm_state_pseudo**,states)                        \
                                                                          \
     /**/

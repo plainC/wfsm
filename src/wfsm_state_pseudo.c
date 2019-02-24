@@ -8,16 +8,16 @@
 #include "wfsm_transition.h"
 
 /* Begin class implementation. */
-#include "wfsm_state_class.h"
+#include "wfsm_state_pseudo_class.h"
 #include <wondermacros/objects/x/class_start.h>
 
 
-CONSTRUCT(wfsm_state) /* self */
+CONSTRUCT(wfsm_state_pseudo) /* self */
 {
     self->events = NULL;
 }
 
-FINALIZE(wfsm_state) /* self */
+FINALIZE(wfsm_state_pseudo) /* self */
 {
     W_HASH_TABLE_FOR_EACH(struct wfsm_event_map, map, self->events)
         W_CALL_VOID(W_OBJECT_AS(map->value,wfsm_transition),free);
@@ -25,7 +25,7 @@ FINALIZE(wfsm_state) /* self */
     W_HASH_TABLE_FREE(self->events);
 }
 
-METHOD(wfsm_state,public,int,add_transition,
+METHOD(wfsm_state_pseudo,public,int,add_transition,
     (const struct wfsm_transition* transition))
 {
     if (transition->flags & WFSM_TRANSITION_AUTO) {
@@ -44,19 +44,7 @@ METHOD(wfsm_state,public,int,add_transition,
     return 0;
 }
 
-METHOD(wfsm_state,public,void,enter)
-{
-    if (self->entry_cb)
-        self->entry_cb((void*) self);
-}
-
-METHOD(wfsm_state,public,void,exit)
-{
-    if (self->exit_cb)
-        self->exit_cb((void*) self);
-}
-
-METHOD(wfsm_state,public,int,on_event,
+METHOD(wfsm_state_pseudo,public,int,on_event,
     (struct wfsm_event* event))
 {
     W_UNUSED(self);
@@ -70,11 +58,11 @@ METHOD(wfsm_state,public,int,on_event,
             return 1;
   //      }
     }
-    if (self->super)
-//        if (W_CALL(self->super,on_event)(event))
+//    if (self->super)
+ //       if (W_CALL(self->super,on_event)(event))
             return 1;
 
-    printf(" Event: %u ignored by %s\n", event->event, self->name);
+//    printf(" Event: %u ignored by %s\n", event->event, self->name);
 
     return 0;
 }

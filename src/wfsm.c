@@ -5,7 +5,7 @@
 
 #include "wfsm.h"
 #include "wfsm_region.h"
-#include "wfsm_state.h"
+#include "wfsm_state_pseudo.h"
 
 
 /* Begin class implementation. */
@@ -30,8 +30,8 @@ FINALIZE(wfsm) /* self */
     W_DYNAMIC_ARRAY_FREE(self->orthogonal_regions);
 }
 
-METHOD(wfsm,public,struct wfsm_state*,add_state,
-    (struct wfsm_region* region, struct wfsm_state* state))
+METHOD(wfsm,public,struct wfsm_state_pseudo*,add_state,
+    (struct wfsm_region* region, struct wfsm_state_pseudo* state))
 {
     if (!region)
         region = self->default_region;
@@ -60,7 +60,7 @@ METHOD(wfsm,public,void,add_state_region,
 }
 
 METHOD(wfsm,public,void,set_start,
-    (struct wfsm_region* region, struct wfsm_state* state))
+    (struct wfsm_region* region, struct wfsm_state_pseudo* state))
 {
     if (!region)
         region = self->default_region;
@@ -79,10 +79,12 @@ METHOD(wfsm,public,void,stop_by_final,
    (struct wfsm_region* region, const struct wfsm_state* state))
 {
     W_UNUSED(state);
+    W_UNUSED(region);
+/*
     W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, r, self->orthogonal_regions)
         if (r != region && (r->current_state->flags & WFSM_STATE_FINAL))
             W_CALL(r,push_event)(0,NULL);
-    self->is_running = 0;
+*/    self->is_running = 0;
 }
 
 METHOD(wfsm,public,int,pop_queues)

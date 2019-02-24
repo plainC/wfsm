@@ -5,7 +5,7 @@
 
 #include "wfsm_region.h"
 #include "wfsm_transition.h"
-#include "wfsm_state.h"
+#include "wfsm_state_pseudo.h"
 
 /* Begin class implementation. */
 #include "wfsm_region_class.h"
@@ -26,8 +26,8 @@ CONSTRUCT(wfsm_region) /* self */
 
 FINALIZE(wfsm_region) /* self */
 {
-    W_DYNAMIC_ARRAY_FOR_EACH(const struct wfsm_state*, state, self->states)
-        W_CALL_VOID(W_OBJECT_AS(state,wfsm_state),free);
+    W_DYNAMIC_ARRAY_FOR_EACH(const struct wfsm_state_pseudo*, state, self->states)
+        W_CALL_VOID(W_OBJECT_AS(state,wfsm_state_pseudo),free);
 
     W_DYNAMIC_ARRAY_FREE(self->states);
 
@@ -36,17 +36,17 @@ FINALIZE(wfsm_region) /* self */
 }
 
 METHOD(wfsm_region,public,int,add_state,
-    (const struct wfsm_state* state))
+    (const struct wfsm_state_pseudo* state))
 {
     W_DYNAMIC_ARRAY_PUSH(self->states, state);
 
-    if (state->flags & WFSM_STATE_INITIAL) {
+//    if (state->flags & WFSM_STATE_INITIAL) {
         if (self->start_state) {
             printf("ERROR: Multiple initial states\n");
             return 1;
         } else
-            self->start_state = state;
-    }
+            self->start_state = (void*) state;
+ //   }
 
     return 0;
 }
@@ -54,11 +54,11 @@ METHOD(wfsm_region,public,int,add_state,
 METHOD(wfsm_region,public,int,add_transition,
     (const struct wfsm_transition* transition))
 {
-    return W_CALL(W_OBJECT_AS(transition->start,wfsm_state),add_transition)(transition);
+    return W_CALL(W_OBJECT_AS(transition->start,wfsm_state_pseudo),add_transition)(transition);
 }
 
 METHOD(wfsm_region,public,int,set_start,
-    (struct wfsm_state* state))
+    (struct wfsm_state_pseudo* state))
 {
     if (self->start_state) {
         printf("ERROR: Start state already set\n");
@@ -70,10 +70,11 @@ METHOD(wfsm_region,public,int,set_start,
 }
 
 
+#if 0
 static inline void
-exit_superstates_until_common(struct wfsm_region__private* self, const struct wfsm_state* target)
+exit_superstates_until_common(struct wfsm_region__private* self, const struct wfsm_state_pseudo* target)
 {
-    W_CALL_VOID(W_OBJECT_AS(self->current_state,wfsm_state),exit);
+    W_CALL_VOID(W_OBJECT_AS(self->current_state,wfsm_state_pseudo),exit);
 
     if (self->current_state == target)
         return;
@@ -83,12 +84,11 @@ exit_superstates_until_common(struct wfsm_region__private* self, const struct wf
         exit_superstates_until_common(self, target);
     }
 }
-
 static inline void
-enter_superstates_and_state(struct wfsm_region__private* self, const struct wfsm_state* target)
+enter_superstates_and_state(struct wfsm_region__private* self, const struct wfsm_state_pseudo* target)
 {
-    const struct wfsm_state** superstates = NULL;
-    const struct wfsm_state* state = target;
+    const struct wfsm_state_pseudo** superstates = NULL;
+    const struct wfsm_state_pseudo* state = target;
     while (state) {
         W_DYNAMIC_STACK_PUSH(superstates, state);
         state = state->super;
@@ -116,13 +116,13 @@ enter_superstates_and_state(struct wfsm_region__private* self, const struct wfsm
 
     W_DYNAMIC_STACK_FREE(superstates);
 }
-
+#endif
 METHOD(wfsm_region,public,void,on_transition,
     (const struct wfsm_transition* transition, struct wfsm_event* event))
 {
     /* Exit superstates until we are at the common level. */
     if (!(transition->flags & WFSM_TRANSITION_INTERNAL)) {
-        exit_superstates_until_common(self, transition->target);
+      //  exit_superstates_until_common(self, transition->target);
     }
 
     /* Run action of the transition if any. */
@@ -131,7 +131,7 @@ METHOD(wfsm_region,public,void,on_transition,
 
     /* Enter all superstates of transition->target if we are not there yet. */
     if (!(transition->flags & WFSM_TRANSITION_INTERNAL)) {
-        enter_superstates_and_state(self, transition->target);
+      //  enter_superstates_and_state(self, transition->target);
     }
 }
 
@@ -140,7 +140,7 @@ METHOD(wfsm_region,public,int,start)
     if (! self->start_state)
         return 1;
 
-    enter_superstates_and_state(self, self->start_state);
+ //   enter_superstates_and_state(self, self->start_state);
 
     return 0;
 }
@@ -159,7 +159,7 @@ METHOD(wfsm_region,public,int,pop_queue)
     W_DEQUE_POP_FRONT(self->events, event);
 
     printf(" Pop: %u\n", event.event);
-    W_CALL(W_OBJECT_AS(self->current_state,wfsm_state),on_event)(&event);
+//    W_CALL(W_OBJECT_AS(self->current_state,wfsm_state),on_event)(&event);
     return 1;
 }
 

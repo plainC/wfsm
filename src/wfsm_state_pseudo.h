@@ -1,14 +1,13 @@
-#ifndef __WFSM_STATE_H
-#define __WFSM_STATE_H
+#ifndef __WFSM_STATE_PSEUDO_H
+#define __WFSM_STATE_PSEUDO_H
 
 #include "wfsm.h"
-#include "wfsm_state_pseudo.h"
 
-typedef void (*wfsm_state_func)(struct wfsm_state* self);
+//typedef void (*wfsm_state_func)(struct wfsm_state* self);
 
 
 /* Build the header. */
-#include "wfsm_state_class.h"
+#include "wfsm_state_pseudo_class.h"
 #include <wondermacros/objects/x/class_declare.h>
 
 /*Unit Test*/
