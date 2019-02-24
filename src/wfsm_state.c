@@ -26,25 +26,6 @@ FINALIZE(wfsm_state) /* self */
     W_HASH_TABLE_FREE(self->events);
 }
 
-METHOD(wfsm_state,public,int,add_transition,
-    (const struct wfsm_transition* transition))
-{
-    if (transition->flags & WFSM_TRANSITION_AUTO) {
-        if (self->auto_transition)
-            return 1;
-        else
-            self->auto_transition = transition;
-    }
-
-    if (transition->flags & WFSM_TRANSITION_INTERNAL &&
-        transition->start != transition->target)
-        return 1;
-
-    W_HASH_TABLE_PUSH(struct wfsm_event_map, self->events, transition->event, transition);
-
-    return 0;
-}
-
 METHOD(wfsm_state,public,void,exit)
 {
     if (self->exit_cb)

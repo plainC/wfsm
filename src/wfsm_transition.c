@@ -29,7 +29,7 @@ METHOD(wfsm_transition,public,int,try_on_event,
     if (self->guard_cb && !self->guard_cb(W_OBJECT_AS(self,wfsm_transition), event))
         return 0;
 
-    
+    W_CALL(self->start->region,set_state)(self->target);
 
     return 1;
 }

@@ -15,4 +15,6 @@
 #include W_XMACRO
 #include "wfsm_transition_internal_class.h"
 #include W_XMACRO
+#include "wfsm_transition_auto_class.h"
+#include W_XMACRO
 

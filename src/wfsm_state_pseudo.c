@@ -6,6 +6,7 @@
 #include "wfsm_state.h"
 #include "wfsm_region.h"
 #include "wfsm_transition.h"
+#include "wfsm_transition_auto.h"
 
 /* Begin class implementation. */
 #include "wfsm_state_pseudo_class.h"
@@ -32,11 +33,17 @@ METHOD(wfsm_state_pseudo,public,void,enter,
     W_UNUSED(event);
 
     W_CALL(self->region,set_state)(W_OBJECT_AS(self,wfsm_state_pseudo));
+    if (self->auto_transition) {
+        W_CALL(W_OBJECT_AS(self->auto_transition,wfsm_transition),try_on_event)(NULL);
+    }
 }
 
 METHOD(wfsm_state_pseudo,public,int,add_transition,
     (const struct wfsm_transition* transition))
 {
+    if (W_OBJECT_IS(transition,wfsm_transition_auto))
+        self->auto_transition = W_OBJECT_AS(transition,wfsm_transition_auto);
+
     W_HASH_TABLE_PUSH(struct wfsm_event_map, self->events, transition->event,
         transition);
 

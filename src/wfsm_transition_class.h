@@ -10,9 +10,9 @@
     VAR(read,wfsm_transition_func,action_cb)                             \
     VAR(read,wfsm_guard_func,guard_cb)                                   \
                                                                          \
-    VAR(read,struct wfsm_state*,start)                                   \
+    VAR(read,struct wfsm_state_pseudo*,start)                                   \
     VAR(read,WFSM_EVENT_TYPE,event)                                      \
-    VAR(read,struct wfsm_state*,target)                                  \
+    VAR(read,struct wfsm_state_pseudo*,target)                                  \
                                                                          \
     VAR(read,int,flags)                                                  \
     /**/

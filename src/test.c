@@ -107,7 +107,7 @@ int main()
 {
     struct wfsm* fsm = W_NEW(wfsm);
 
-    struct wfsm_state* A = (void*) W_CALL(fsm,add_state)(NULL,(void*)W_NEW(wfsm_state_initial));
+    struct wfsm_state_pseudo* A = (void*) W_CALL(fsm,add_state)(NULL,(void*)W_NEW(wfsm_state_initial));
     W_CALL(fsm,add_transition)(NULL,(void*)W_NEW(wfsm_transition_internal,.start = A,.event=1,.action_cb=(void*)A_1));
 
     W_CALL_VOID(fsm,start);

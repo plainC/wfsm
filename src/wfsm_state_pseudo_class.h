@@ -14,6 +14,6 @@
     VAR(public,struct wfsm_region*,region)                               \
     VAR(private,struct wfsm_event_map*,events)                           \
                                                                          \
-    VAR(read,const struct wfsm_transition*,auto_transition)              \
+    VAR(read,const struct wfsm_transition_auto*,auto_transition)         \
                                                                          \
     /**/

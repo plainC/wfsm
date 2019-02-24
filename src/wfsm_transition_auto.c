@@ -3,25 +3,25 @@
 #endif
 
 
-#include "wfsm_transition_self.h"
+#include "wfsm_transition_auto.h"
 #include "wfsm_state.h"
 
 /* Begin class implementation. */
-#include "wfsm_transition_self_class.h"
+#include "wfsm_transition_auto_class.h"
 #include <wondermacros/objects/x/class_start.h>
 
 
-CONSTRUCT(wfsm_transition_self) /* self */
+CONSTRUCT(wfsm_transition_auto) /* self */
 {
     W_UNUSED(self);
 }
 
-FINALIZE(wfsm_transition_self) /* self */
+FINALIZE(wfsm_transition_auto) /* self */
 {
     W_UNUSED(self);
 }
 
-METHOD(wfsm_transition_self,public,int,try_on_event,
+METHOD(wfsm_transition_auto,public,int,try_on_event,
     (struct wfsm_event* event))
 {
     W_UNUSED(self);
@@ -34,6 +34,7 @@ METHOD(wfsm_transition_self,public,int,try_on_event,
         self->action_cb(W_OBJECT_AS(self,wfsm_transition), event);
     W_CALL(W_OBJECT_AS(self->start,wfsm_state_pseudo),enter)(event);
 
+printf("HH\n");
     return 1;
 }
 
