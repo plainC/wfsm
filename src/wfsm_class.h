@@ -17,6 +17,7 @@
         (struct wfsm_region* region, struct wfsm_state_pseudo* state))           \
     METHOD(wfsm,public,void,start)                                        \
     METHOD(wfsm,public,int,pop_queues)                                    \
+    METHOD(wfsm,public,int,terminate)                                    \
                                                                           \
     METHOD(wfsm,public,void,push_event,                                   \
         (WFSM_EVENT_TYPE event, void* data))                              \

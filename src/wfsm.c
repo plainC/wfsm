@@ -76,6 +76,15 @@ METHOD(wfsm,public,void,start)
         W_CALL_VOID(region,start);
 }
 
+METHOD(wfsm,public,int,terminate)
+{
+    if (!self->is_running)
+        return 1;
+
+    self->is_running = 0;
+    return 0;
+}
+
 METHOD(wfsm,public,void,stop_by_final,
    (struct wfsm_region* region, const struct wfsm_state* state))
 {

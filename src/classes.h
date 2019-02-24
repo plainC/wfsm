@@ -8,6 +8,8 @@
 #include W_XMACRO
 #include "wfsm_state_class.h"
 #include W_XMACRO
+#include "wfsm_state_terminate_class.h"
+#include W_XMACRO
 
 #include "wfsm_transition_class.h"
 #include W_XMACRO
