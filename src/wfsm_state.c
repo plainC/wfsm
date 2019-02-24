@@ -44,12 +44,6 @@ METHOD(wfsm_state,public,int,add_transition,
     return 0;
 }
 
-METHOD(wfsm_state,public,void,enter)
-{
-    if (self->entry_cb)
-        self->entry_cb((void*) self);
-}
-
 METHOD(wfsm_state,public,void,exit)
 {
     if (self->exit_cb)

@@ -71,6 +71,7 @@ METHOD(wfsm,public,void,set_start,
 METHOD(wfsm,public,void,start)
 {
     self->is_running = 1;
+
     W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_region*, region, self->orthogonal_regions)
         W_CALL_VOID(region,start);
 }

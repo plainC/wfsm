@@ -32,7 +32,7 @@ METHOD(wfsm_transition_self,public,int,try_on_event,
     W_CALL_VOID(self->start,exit);
     if (self->action_cb)
         self->action_cb(W_OBJECT_AS(self,wfsm_transition), event);
-    W_CALL_VOID(W_OBJECT_AS(self->start,wfsm_state),enter);
+    W_CALL(W_OBJECT_AS(self->start,wfsm_state_pseudo),enter)(event);
 
     return 1;
 }

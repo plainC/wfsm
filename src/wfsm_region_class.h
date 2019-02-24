@@ -5,10 +5,12 @@
       /*none */                                                          \
                                                                          \
     METHOD(wfsm_region,public,int,add_state,                             \
-        (const struct wfsm_state_pseudo* state))                         \
+        (struct wfsm_state_pseudo* state))                         \
     METHOD(wfsm_region,public,int,add_transition,                        \
         (const struct wfsm_transition* transition))                      \
                                                                          \
+    METHOD(wfsm_region,public,void,set_state,                             \
+        (struct wfsm_state_pseudo* state))                                      \
     METHOD(wfsm_region,public,int,set_start,                             \
         (struct wfsm_state_pseudo* state))                                      \
     METHOD(wfsm_region,public,int,start)                                 \

@@ -25,6 +25,15 @@ FINALIZE(wfsm_state_pseudo) /* self */
     W_HASH_TABLE_FREE(self->events);
 }
 
+
+METHOD(wfsm_state_pseudo,public,void,enter,
+    (struct wfsm_event* event))
+{
+    W_UNUSED(event);
+
+    W_CALL(self->region,set_state)(W_OBJECT_AS(self,wfsm_state_pseudo));
+}
+
 METHOD(wfsm_state_pseudo,public,int,add_transition,
     (const struct wfsm_transition* transition))
 {

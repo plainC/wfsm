@@ -36,8 +36,9 @@ FINALIZE(wfsm_region) /* self */
 }
 
 METHOD(wfsm_region,public,int,add_state,
-    (const struct wfsm_state_pseudo* state))
+    (struct wfsm_state_pseudo* state))
 {
+    state->region = W_OBJECT_AS(self,wfsm_region);
     W_DYNAMIC_ARRAY_PUSH(self->states, state);
 
 //    if (state->flags & WFSM_STATE_INITIAL) {
@@ -55,6 +56,12 @@ METHOD(wfsm_region,public,int,add_transition,
     (const struct wfsm_transition* transition))
 {
     return W_CALL(W_OBJECT_AS(transition->start,wfsm_state_pseudo),add_transition)(transition);
+}
+
+METHOD(wfsm_region,public,void,set_state,
+    (struct wfsm_state_pseudo* state))
+{
+    self->current_state = state;
 }
 
 METHOD(wfsm_region,public,int,set_start,
@@ -140,6 +147,7 @@ METHOD(wfsm_region,public,int,start)
     if (! self->start_state)
         return 1;
 
+    W_CALL(W_OBJECT_AS(self->start_state,wfsm_state_pseudo),enter)(NULL);
  //   enter_superstates_and_state(self, self->start_state);
 
     return 0;

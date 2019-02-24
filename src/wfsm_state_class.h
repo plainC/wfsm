@@ -4,7 +4,6 @@
     /* Inherits */                                                       \
     wfsm_state_pseudo__define                                            \
                                                                          \
-    METHOD(wfsm_state,public,void,enter)                                 \
     METHOD(wfsm_state,public,void,exit)                                  \
                                                                          \
     VAR(read,struct wfsm_state*,super)                                   \

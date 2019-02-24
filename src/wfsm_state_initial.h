@@ -14,4 +14,17 @@
 # define W_TEST(...)
 #endif
 
+W_TEST(wfsm_state_initial,
+    struct wfsm* fsm = W_NEW(wfsm);
+
+    struct wfsm_state* A = (void*)
+        W_CALL(fsm,add_state)(NULL, (void*) W_NEW(wfsm_state_initial));
+
+    W_CALL_VOID(fsm,start);
+
+    W_TEST_ASSERT(fsm->default_region->current_state == A, "fsm start failed");
+
+    W_CALL_VOID(fsm,free);
+)
+
 #endif
