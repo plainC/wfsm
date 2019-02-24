@@ -19,8 +19,9 @@ CONSTRUCT(wfsm_state_initial) /* self */
 
 FINALIZE(wfsm_state_initial) /* self */
 {
-    W_HASH_TABLE_FOR_EACH(struct wfsm_event_map, map, self->events)
+    W_HASH_TABLE_FOR_EACH(struct wfsm_event_map, map, self->events) {
         W_CALL_VOID(W_OBJECT_AS(map->value,wfsm_transition),free);
+    }
 
     W_HASH_TABLE_FREE(self->events);
 }
