@@ -30,6 +30,8 @@ METHOD(wfsm_state,public,void,on_event,
     W_UNUSED(session);
     W_UNUSED(statep);
     W_UNUSED(event);
+
+    printf("on event: %u\n", event->event);
 }
 
 #include <wondermacros/objects/x/class_end.h>

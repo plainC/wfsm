@@ -3,6 +3,7 @@
 #endif
 
 
+#include "wfsm.h"
 #include "wfsm_session.h"
 #include "wfsm_event.h"
 #include "wfsm_state.h"
@@ -15,6 +16,8 @@
 CONSTRUCT(wfsm_session)
 {
     W_DEQUE_INIT(self->wfsm_session.events, 3 /* ^ 2 = 8 */);
+    if (self->fsm && self->fsm->initial_state)
+        W_DYNAMIC_ARRAY_PUSH(self->wfsm_session.states, self->fsm->initial_state);
 }
 
 FINALIZE(wfsm_session)

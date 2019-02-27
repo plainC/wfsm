@@ -5,6 +5,8 @@
 
 #include "wfsm.h"
 #include "wfsm_state.h"
+#include "wfsm_state_initial.h"
+#include "wfsm_event.h"
 
 
 /* Begin class implementation. */
@@ -23,7 +25,12 @@ FINALIZE(wfsm) /* self */
 METHOD(wfsm,public,struct wfsm_state*,add_state,
     (struct wfsm_state* state))
 {
-    W_DYNAMIC_ARRAY_PUSH(self->states, state);
+    if (W_OBJECT_IS(state,wfsm_state_initial)) {
+        if (self->initial_state)
+            return NULL;
+        else
+            self->initial_state = state;
+    }
 
     return state;
 }
@@ -35,5 +42,13 @@ METHOD(wfsm,public,struct wfsm_transition*,add_transition,
     return transition;
 }
 
+METHOD(wfsm,public,struct wfsm_event*,add_event_type,
+        (struct wfsm_event* event))
+{
+    W_DYNAMIC_ARRAY_PUSH(self->events, event);
+    W_CALL(event,change_id)(W_DYNAMIC_ARRAY_SIZE(self->events)-1);
+
+    return event;
+}
 
 #include <wondermacros/objects/x/class_end.h>
