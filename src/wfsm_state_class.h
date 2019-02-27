@@ -20,6 +20,7 @@
     VAR(read,wfsm_state_cb,on_entry_cb)                                      \
     VAR(read,wfsm_state_cb,on_exit_cb)                                       \
                                                                              \
+    VAR(read,struct wfsm_state*,super)                                       \
     VAR(read,char*,name)                                                     \
     VAR(private,struct wfsm_transition**,transitions)                        \
     VAR(private,struct wfsm_transition**,auto_transitions)                   \

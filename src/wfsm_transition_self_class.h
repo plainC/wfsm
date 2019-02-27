@@ -2,10 +2,8 @@
 
 #define wfsm_transition_self__define                                         \
     /* Inherits: */                                                          \
-    wfsm_transition__define                                                  \
+    wfsm_transition_on_event__define                                         \
                                                                              \
     OVERLOAD(wfsm_transition_self,take)                                      \
-                                                                             \
-    VAR(read,unsigned,event)                                                 \
                                                                              \
     /**/

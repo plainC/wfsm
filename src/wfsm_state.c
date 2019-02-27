@@ -9,6 +9,7 @@
 #include "wfsm_session.h"
 #include "wfsm_transition.h"
 #include "wfsm_transition_auto.h"
+#include "wfsm_transition_on_event.h"
 #include "wfsm_transition_self.h"
 
 
@@ -54,7 +55,7 @@ METHOD(wfsm_state,public,int,add_transition,
     (struct wfsm_transition* transition))
 {
     W_CALL(transition,set_start)(W_OBJECT_AS(self,wfsm_state));
-    struct wfsm_transition_self* tr = (void*) transition;
+    struct wfsm_transition_on_event* tr = W_OBJECT_AS(transition,wfsm_transition_on_event);
 
     if (W_OBJECT_IS(transition,wfsm_transition_auto)) {
         W_DYNAMIC_ARRAY_PUSH(self->wfsm_state.auto_transitions, transition);

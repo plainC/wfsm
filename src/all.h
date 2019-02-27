@@ -8,4 +8,5 @@
 
 #include "wfsm_transition.h"
 #include "wfsm_transition_auto.h"
+#include "wfsm_transition_on_event.h"
 #include "wfsm_transition_self.h"
