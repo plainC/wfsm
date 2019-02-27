@@ -8,10 +8,10 @@ CLASSES = $(wildcard *_class.h)
 SRCS = $(patsubst %_class.h,%.c,$(CLASSES))
 HEADERS = $(patsubst %.c,%.h,$(SRCS))
 
-all: $(CLASSES) $(SRCS) $(HEADERS)
+all: $(CLASSES) $(SRCS) $(HEADERS) test.c
 	cc $(CFLAGS) -o test $(SRCS) test.c
 
-unit_test: $(CLASSES) $(SRCS) $(HEADERS)
+unit_test: $(CLASSES) $(SRCS) $(HEADERS) unit_test.c
 	cc $(CFLAGS) -o unit_test $(SRCS) unit_test.c
 
 clean:

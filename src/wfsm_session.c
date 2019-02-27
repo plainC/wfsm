@@ -3,12 +3,11 @@
 #endif
 
 
-#include "wfsm.h"
-#include "wfsm_state.h"
+#include "wfsm_session.h"
 
 
 /* Begin class implementation. */
-#include "wfsm_state_class.h"
+#include "wfsm_session_class.h"
 #include <wondermacros/objects/x/class_start.h>
 
 

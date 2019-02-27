@@ -13,31 +13,17 @@
 # include <wondermacros/array/hash_table.h>
 #endif
 
+/* We use automatic casting to void to kill warnings. A bit more unsafe, however. */
+#define W_OBJECT_CAST_TO_VOID
+
 /* Forward declare all classes. */
 #define W_XMACRO <wondermacros/objects/x/forward_declare.h>
 #include "classes.h"
 
 
-
-#define WFSM_EVENT_TYPE unsigned
-#define WFSM_EVENT_QUEUE_SIZE 3 /* ^ 2 */
-
-struct wfsm_event {
-    WFSM_EVENT_TYPE event;
-    const struct wfsm_region* region;
-    void* data;
-};
-
-struct wfsm_event_map {
-    WFSM_EVENT_TYPE key;
-    const struct wfsm_transition* value;
-};
-
 /* Build the header. */
 #include "wfsm_class.h"
 #include <wondermacros/objects/x/class_declare.h>
-
-#include "wfsm_api.h"
 
 
 /*Unit Test*/
@@ -53,8 +39,6 @@ struct wfsm_event_map {
 W_TEST_GROUP("FSM Core")
 
 W_TEST(wfsm,
-    struct wfsm* fsm = W_NEW(wfsm);
-    W_CALL_VOID(fsm,free);
 )
 
 #endif
