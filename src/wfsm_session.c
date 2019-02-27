@@ -17,7 +17,7 @@ CONSTRUCT(wfsm_session)
 {
     W_DEQUE_INIT(self->wfsm_session.events, 3 /* ^ 2 = 8 */);
     if (self->fsm && self->fsm->initial_state)
-        W_DYNAMIC_ARRAY_PUSH(self->wfsm_session.states, self->fsm->initial_state);
+        W_DYNAMIC_ARRAY_PUSH(self->wfsm_session.states, W_OBJECT_AS(self->fsm->initial_state,wfsm_state));
 }
 
 FINALIZE(wfsm_session)
@@ -29,13 +29,14 @@ FINALIZE(wfsm_session)
     W_DEQUE_FREE(self->wfsm_session.events);
 }
 
-METHOD(wfsm_session,public,void,push_event,
+METHOD(wfsm_session,public,int,push_event,
     (struct wfsm_event* event))
 {
     int is_full=0;
     W_DEQUE_PUSH_BACK(is_full,self->wfsm_session.events,event);
     if (is_full)
-        printf("Error\n");
+        return 1;
+    return 0;
 }
 
 METHOD(wfsm_session,public,int,pop_event)

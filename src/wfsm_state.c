@@ -26,10 +26,24 @@ FINALIZE(wfsm_state) {
     free(self->name);
 }
 
+METHOD(wfsm_state,public,void,enter,
+    (struct wfsm_session* session))
+{
+    if (self->on_entry_cb)
+        self->on_entry_cb(session);
+}
+
+METHOD(wfsm_state,public,void,exit,
+    (struct wfsm_session* session))
+{
+    if (self->on_exit_cb)
+        self->on_exit_cb(session);
+}
+
 METHOD(wfsm_state,public,int,add_transition,
     (struct wfsm_transition* transition))
 {
-    W_CALL(transition,set_start)(self);
+    W_CALL(transition,set_start)(W_OBJECT_AS(self,wfsm_state));
     struct wfsm_transition_self* tr = (void*) transition;
 printf("%d\n", tr->event);
     W_DYNAMIC_ARRAY_GROW_AT_LEAST(self->wfsm_state.transitions,tr->event+1);

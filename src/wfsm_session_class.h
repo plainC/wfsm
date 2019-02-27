@@ -10,7 +10,7 @@
     VAR(private,struct wfsm_event**,events)                                  \
     VAR(private,struct wfsm_state**,states)                                  \
                                                                              \
-    METHOD(wfsm_session,public,void,push_event,                              \
+    METHOD(wfsm_session,public,int,push_event,                               \
         (struct wfsm_event* event))                                          \
     METHOD(wfsm_session,public,int,pop_event)                                \
                                                                              \
