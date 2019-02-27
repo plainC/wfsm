@@ -7,7 +7,7 @@
     /* none */                                                               \
                                                                              \
     METHOD(wfsm_state,public,void,enter,                                     \
-        (struct wfsm_session* session))                                      \
+        (struct wfsm_session* session, struct wfsm_state** startp))          \
     METHOD(wfsm_state,public,void,exit,                                      \
         (struct wfsm_session* session))                                      \
                                                                              \
@@ -22,6 +22,7 @@
                                                                              \
     VAR(read,char*,name)                                                     \
     VAR(private,struct wfsm_transition**,transitions)                        \
+    VAR(private,struct wfsm_transition**,auto_transitions)                   \
                                                                              \
     /**/
 

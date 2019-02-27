@@ -8,6 +8,7 @@
 #include "wfsm_event.h"
 #include "wfsm_session.h"
 #include "wfsm_transition.h"
+#include "wfsm_transition_auto.h"
 #include "wfsm_transition_self.h"
 
 
@@ -20,6 +21,7 @@ CONSTRUCT(wfsm_state) {
         self->name = strdup(self->name);
 
     self->wfsm_state.transitions = NULL;
+    self->wfsm_state.auto_transitions = NULL;
 }
 
 FINALIZE(wfsm_state) {
@@ -27,10 +29,18 @@ FINALIZE(wfsm_state) {
 }
 
 METHOD(wfsm_state,public,void,enter,
-    (struct wfsm_session* session))
+    (struct wfsm_session* session, struct wfsm_state** startp))
 {
     if (self->on_entry_cb)
         self->on_entry_cb(session);
+    *startp = W_OBJECT_AS(self,wfsm_state);
+
+    W_DYNAMIC_ARRAY_FOR_EACH(struct wfsm_transition*, transition, self->wfsm_state.auto_transitions) {
+        if (W_CALL(transition,accepted)(NULL, session)) {
+            W_CALL(transition,take)(NULL, session, startp);
+            return;
+        }
+    }
 }
 
 METHOD(wfsm_state,public,void,exit,
@@ -45,7 +55,11 @@ METHOD(wfsm_state,public,int,add_transition,
 {
     W_CALL(transition,set_start)(W_OBJECT_AS(self,wfsm_state));
     struct wfsm_transition_self* tr = (void*) transition;
-printf("%d\n", tr->event);
+
+    if (W_OBJECT_IS(transition,wfsm_transition_auto)) {
+        W_DYNAMIC_ARRAY_PUSH(self->wfsm_state.auto_transitions, transition);
+        return 0;
+    }
     W_DYNAMIC_ARRAY_GROW_AT_LEAST(self->wfsm_state.transitions,tr->event+1);
     self->wfsm_state.transitions[tr->event] = transition;
     return 0;
@@ -55,9 +69,9 @@ METHOD(wfsm_state,public,void,on_event,
     (struct wfsm_event* event, struct wfsm_session* session,
      struct wfsm_state** statep))
 {
-    W_UNUSED(statep);
+    struct wfsm_transition* transition = self->wfsm_state.transitions ?
+        self->wfsm_state.transitions[event->event] : NULL;
 
-    struct wfsm_transition* transition = self->wfsm_state.transitions[event->event];
     if (!transition) {
         printf("%u ignored\n",event->event);
         return;

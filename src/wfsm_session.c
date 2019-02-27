@@ -16,8 +16,13 @@
 CONSTRUCT(wfsm_session)
 {
     W_DEQUE_INIT(self->wfsm_session.events, 3 /* ^ 2 = 8 */);
-    if (self->fsm && self->fsm->initial_state)
-        W_DYNAMIC_ARRAY_PUSH(self->wfsm_session.states, W_OBJECT_AS(self->fsm->initial_state,wfsm_state));
+
+    if (self->fsm) {
+        W_DYNAMIC_ARRAY_FOR_EACH(const struct wfsm_state*, state, self->fsm->initial_states) {
+            W_DYNAMIC_ARRAY_PUSH(self->wfsm_session.states, NULL);
+            W_CALL(state,enter)(W_OBJECT_AS(self,wfsm_session),W_DYNAMIC_ARRAY_LAST_PTR(self->wfsm_session.states));
+        }
+    }
 }
 
 FINALIZE(wfsm_session)

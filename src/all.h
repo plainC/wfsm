@@ -7,4 +7,5 @@
 #include "wfsm_state_initial.h"
 
 #include "wfsm_transition.h"
+#include "wfsm_transition_auto.h"
 #include "wfsm_transition_self.h"

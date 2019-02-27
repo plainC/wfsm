@@ -16,6 +16,6 @@
                                                                           \
     VAR(read,struct wfsm_event**,events)                                  \
     VAR(read,struct wfsm_state**,states)                                  \
-    VAR(read,struct wfsm_state*,initial_state)                            \
+    VAR(read,struct wfsm_state**,initial_states)                          \
                                                                           \
     /**/

@@ -26,10 +26,7 @@ METHOD(wfsm,public,struct wfsm_state*,add_state,
     (struct wfsm_state* state))
 {
     if (W_OBJECT_IS(state,wfsm_state_initial)) {
-        if (self->initial_state)
-            return NULL;
-        else
-            self->initial_state = state;
+        W_DYNAMIC_ARRAY_PUSH(self->initial_states, state);
     }
 
     return state;
