@@ -10,3 +10,4 @@
 #include "wfsm_transition_auto.h"
 #include "wfsm_transition_on_event.h"
 #include "wfsm_transition_self.h"
+#include "wfsm_transition_normal.h"

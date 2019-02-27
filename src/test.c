@@ -6,6 +6,7 @@
 #include "wfsm_transition.h"
 #include "wfsm_transition_auto.h"
 #include "wfsm_transition_self.h"
+#include "wfsm_transition_normal.h"
 #include "wfsm_event.h"
 #include <wondermacros/misc/unused.h>
 
@@ -33,6 +34,18 @@ void s2_exit(struct wfsm_session* session)
     printf("s2 exit\n");
 }
 
+void s3_entry(struct wfsm_session* session)
+{
+    W_UNUSED(session);
+    printf("s3 entry\n");
+}
+
+void s3_exit(struct wfsm_session* session)
+{
+    W_UNUSED(session);
+    printf("s3 exit\n");
+}
+
 void s_action(struct wfsm_session* session, struct wfsm_event* event)
 {
     W_UNUSED(session);
@@ -51,13 +64,19 @@ int main()
 
     struct wfsm_state* s1 = W_NEW(wfsm_state_initial, .name = "s1", .on_entry_cb=s1_entry, .on_exit_cb=s1_exit);
     struct wfsm_state* s2 = W_NEW(wfsm_state_normal, .name = "s2", .on_entry_cb=s2_entry, .on_exit_cb=s2_exit);
+    struct wfsm_state* s3 = W_NEW(wfsm_state_normal, .name = "s3", .on_entry_cb=s3_entry, .on_exit_cb=s3_exit);
     W_CALL(s1,add_transition)(W_NEW(wfsm_transition_auto, .target=s2, .action_cb = s_action));
     W_CALL(s2,add_transition)(W_NEW(wfsm_transition_self, .event = e1->event, .action_cb = s_action));
+    W_CALL(s2,add_transition)(W_NEW(wfsm_transition_normal, .event = e2->event, .target = s3, .action_cb = s_action));
     W_CALL(f,add_state)(s1);
     W_CALL(f,add_state)(s2);
+    W_CALL(f,add_state)(s3);
 
     struct wfsm_session* session = W_NEW(wfsm_session, .fsm = f);
     W_CALL(session,push_event)(e1);
+    W_CALL(session,push_event)(e2);
+    if (W_CALL_VOID(session,pop_event))
+        printf("no events\n");
     if (W_CALL_VOID(session,pop_event))
         printf("no events\n");
 
