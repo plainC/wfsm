@@ -6,6 +6,9 @@
     /* Inherits: */                                                          \
     /* none */                                                               \
                                                                              \
+    METHOD(wfsm_state,public,void,on_event,                                  \
+        (struct wfsm_event* event, struct wfsm_session* session,             \
+         struct wfsm_state** statep))                                        \
     VAR(read,char*,name)                                                     \
                                                                              \
     /**/

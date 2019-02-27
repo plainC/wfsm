@@ -4,19 +4,15 @@
 
 
 #include "wfsm.h"
-#include "wfsm_state_normal.h"
+#include "wfsm_event.h"
 
 
 /* Begin class implementation. */
-#include "wfsm_state_normal_class.h"
+#include "wfsm_event_class.h"
 #include <wondermacros/objects/x/class_start.h>
 
-CONSTRUCT(wfsm_state_normal) {
-    W_CALL_ACONSTRUCT(wfsm_state);
-}
-
-FINALIZE(wfsm_state_normal) {
-    W_CALL_AFINALIZE(wfsm_state);
+FINALIZE(wfsm_event)
+{
 }
 
 #include <wondermacros/objects/x/class_end.h>
