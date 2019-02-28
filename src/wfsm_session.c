@@ -22,6 +22,7 @@ CONSTRUCT(wfsm_session)
             W_DYNAMIC_ARRAY_PUSH(self->wfsm_session.states, NULL);
             W_CALL(state,enter)(W_OBJECT_AS(self,wfsm_session),W_DYNAMIC_ARRAY_LAST_PTR(self->wfsm_session.states));
         }
+        self->is_active = 1;
     }
 }
 
@@ -37,16 +38,25 @@ FINALIZE(wfsm_session)
 METHOD(wfsm_session,public,int,push_event,
     (struct wfsm_event* event))
 {
+    if (!self->is_active)
+        return 1;
+
     int is_full=0;
     W_DEQUE_PUSH_BACK(is_full,self->wfsm_session.events,event);
     if (is_full)
         return 1;
+
     return 0;
+}
+
+METHOD(wfsm_session,public,void,deactivate)
+{
+    self->is_active = 0;
 }
 
 METHOD(wfsm_session,public,int,pop_event)
 {
-    if (W_DEQUE_IS_EMPTY(self->wfsm_session.events))
+    if (!self->is_active || W_DEQUE_IS_EMPTY(self->wfsm_session.events))
         return 1;
 
     struct wfsm_event* event;

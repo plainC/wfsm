@@ -7,6 +7,7 @@
 #include "wfsm_transition_auto.h"
 #include "wfsm_transition_self.h"
 #include "wfsm_transition_normal.h"
+#include "wfsm_state_final.h"
 #include "wfsm_event.h"
 #include <wondermacros/misc/unused.h>
 

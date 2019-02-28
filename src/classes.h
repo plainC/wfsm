@@ -13,6 +13,8 @@
 #include W_XMACRO
 #include "wfsm_state_initial_class.h"
 #include W_XMACRO
+#include "wfsm_state_final_class.h"
+#include W_XMACRO
 
 #include "wfsm_transition_class.h"
 #include W_XMACRO

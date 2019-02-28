@@ -5,6 +5,7 @@
 #include "wfsm_state.h"
 #include "wfsm_state_normal.h"
 #include "wfsm_state_initial.h"
+#include "wfsm_state_final.h"
 
 #include "wfsm_transition.h"
 #include "wfsm_transition_auto.h"
