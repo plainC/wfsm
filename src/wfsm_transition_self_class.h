@@ -4,6 +4,6 @@
     /* Inherits: */                                                          \
     wfsm_transition_on_event__define                                         \
                                                                              \
-    OVERLOAD(wfsm_transition_self,take)                                      \
+    OVERRIDE(wfsm_transition_self,take)                                      \
                                                                              \
     /**/

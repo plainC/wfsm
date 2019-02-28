@@ -7,6 +7,6 @@
     /* Inherits: */                                                          \
     wfsm_state__define                                                       \
                                                                              \
-    OVERLOAD(wfsm_state_final,enter)                                         \
+    OVERRIDE(wfsm_state_final,enter)                                         \
                                                                              \
     /**/

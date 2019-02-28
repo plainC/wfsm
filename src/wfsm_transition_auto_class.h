@@ -4,7 +4,7 @@
     /* Inherits: */                                                          \
     wfsm_transition__define                                                  \
                                                                              \
-    OVERLOAD(wfsm_transition_auto,take)                                      \
+    OVERRIDE(wfsm_transition_auto,take)                                      \
                                                                              \
     VAR(read,struct wfsm_state*,target)                                      \
                                                                              \
