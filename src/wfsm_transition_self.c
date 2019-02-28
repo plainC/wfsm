@@ -26,7 +26,7 @@ FINALIZE(wfsm_transition_self)
 METHOD(wfsm_transition_self,public,void,take,
     (struct wfsm_event* event, struct wfsm_session* session, struct wfsm_state** statep))
 {
-    W_CALL(*statep,exit)(session);
+    W_CALL(*statep,exit)(session,statep,self->start);
     if (self->action_cb)
         self->action_cb(session, event);
     W_CALL(*statep,enter)(session, statep);

@@ -32,6 +32,21 @@ FINALIZE(wfsm_state) {
 METHOD(wfsm_state,public,void,enter,
     (struct wfsm_session* session, struct wfsm_state** startp))
 {
+    if (*startp != W_OBJECT_AS(self,wfsm_state)) {
+        struct wfsm_state* state = self->super;
+        struct wfsm_state** stack = NULL;
+        while (state && state != *startp) {
+            W_DYNAMIC_STACK_PUSH(stack, state);
+            state = W_OBJECT_AS(state->super,wfsm_state);
+        }
+        while (!W_DYNAMIC_STACK_IS_EMPTY(stack)) {
+            state = W_DYNAMIC_STACK_POP(stack);
+            if (state->on_entry_cb)
+                self->on_entry_cb(session);
+            *startp = state;
+        }
+        W_DYNAMIC_STACK_FREE(stack);
+    }
     if (self->on_entry_cb)
         self->on_entry_cb(session);
     *startp = W_OBJECT_AS(self,wfsm_state);
@@ -44,11 +59,42 @@ METHOD(wfsm_state,public,void,enter,
     }
 }
 
-METHOD(wfsm_state,public,void,exit,
-    (struct wfsm_session* session))
+METHOD(wfsm_state,public,int,is_superstate_of,
+    (struct wfsm_state* state))
 {
-    if (self->on_exit_cb)
+    if (!state)
+        return 0;
+
+    state = W_OBJECT_AS(state->super,wfsm_state);
+    while (state) {
+        if (state == W_OBJECT_AS(self,wfsm_state))
+            return 1;
+        state = W_OBJECT_AS(state->super,wfsm_state);
+    }
+    return 0;
+}
+
+METHOD(wfsm_state,public,int,is_substate_of,
+    (struct wfsm_state* state))
+{
+    if (state)
+        return W_CALL(state,is_superstate_of)(W_OBJECT_AS(self,wfsm_state));
+    return 0;
+}
+
+METHOD(wfsm_state,public,void,exit,
+    (struct wfsm_session* session, struct wfsm_state** statep, struct wfsm_state* target))
+{
+    if (!W_CALL(self,is_superstate_of)(target) && self->on_exit_cb)
         self->on_exit_cb(session);
+
+    struct wfsm_state* state = self->super;
+    while (state) {
+        if (!W_CALL(state,is_superstate_of)(target) && state->on_exit_cb)
+            state->on_exit_cb(session);
+        *statep = state;
+        state = W_OBJECT_AS(state->super,wfsm_state);
+    }
 }
 
 METHOD(wfsm_state,public,int,add_transition,
